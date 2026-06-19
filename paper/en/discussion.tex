@@ -1,0 +1,94 @@
+% ============================================================
+% Discussion --- interpretation, implications, limitations (target: C&S)
+% ============================================================
+\section{Discussion}
+\label{sec:discussion}
+
+The results converge on a single thesis: residual spear phishing is detectable
+exactly to the degree to which it \emph{violates} the victim's observable domain knowledge ---
+and that degree can be \emph{measured}. Below we interpret the mechanism, outline the
+practical implications, and honestly delineate the limits.
+
+\subsection{Interpretation: two invariants, two failure modes}
+The two invariants are not competing detectors but \emph{complementary} responses to two
+disjoint modes of targeted attack. The cross-layer inconsistency invariant
+(\ref{sec:res-inv1}) addresses the \emph{new sender}: role or authority impersonation is
+``known'' in one layer (e.g.\ name, domain), yet inconsistent in others (no OSINT trace, no
+relationship history) --- which breaks the pattern of a genuine relationship that is consistent across many layers at once.
+The cascade dynamics invariant (\ref{sec:res-inv2}) addresses the \emph{compromised account}, which is
+consistent across all static layers (because it \emph{is} a genuine contact), yet betrays itself
+\emph{temporally}: it sends out of rhythm, creating a recipient-side cascade. The per-threat
+ablation makes this complementarity explicit: for new senders the signal is carried by
+OSINT, while time is useless; for compromises it is the reverse. This observation explains
+why single approaches (a content filter alone, a contact graph alone, a volumetric detector alone) fail
+on the residual $2\%$: each is blind to one of the two modes.
+
+Mechanistically, the most important result concerns the \emph{stealthy attacker}. A volumetric detector
+(in the spirit of COMPA \citep{stringhini2015thataint}) assumes that a compromise manifests as a ``surge'';
+when the attacker deliberately spreads out the sending, the volumetric signal vanishes (AUC below random).
+Cascade dynamics reads the \emph{recipient side} --- the wave-like signature among the neighbors ---
+whose stealth the sender cannot hide. This is consistent with the observations of Ho et al.\ \citep{ho2019detecting},
+that lateral phishing requires a signal beyond the content of a single message; we differ, however,
+in that we locate the signal in the \emph{dynamics of the domain knowledge graph}, not in headers or relays.
+
+\subsection{Practical implications}
+The strongest implication stems from the susceptibility measurement (\ref{sec:susceptibility}) and is \emph{counter-intuitive}.
+Typical defense programs prioritize ``VIPs'' (executives) as the most exposed. Our
+measurement shows that with respect to the \emph{lateral} channel the opposite holds: executives, densely embedded
+in the domain knowledge graph, are \emph{best} protected by the structural signal alone, while the largest
+unaddressed margin lies on the \emph{periphery} (mid/junior). The recommendation is therefore two-part:
+(a)~awareness programs and hard controls (e.g.\ out-of-band verification for transfers) should
+cover the \emph{periphery}, not just the top; (b)~detection resources are worth directing where the domain knowledge
+graph is sparse --- because that is where the residual margin is largest. With respect to the
+\emph{cold impersonation} channel the measurement delivers a hard message: no relational layer suffices
+($\mathrm{Susc}\!\approx\!0.96$ regardless of rank), so here the graph \emph{must} be combined
+with content and process controls --- as the fusion experiment confirms. This makes the domain knowledge graph
+not a standalone product but a \emph{prioritization layer}: it indicates who, and through which relationship,
+is most weakly protected.
+
+The result also has an implication for the human factor. Because human susceptibility rises under
+time pressure and authority cues while awareness training moderates it only partially
+(Section~\ref{sec:related}), a structural susceptibility measure allows limited training interventions
+to be \emph{targeted} at the roles that the technology protects most weakly.
+
+\subsection{Limitations}
+We treat the limitations seriously, because they define the scope of the claims. \emph{First,
+maliciousness is synthetic.} No public corpus links real OSINT facts with labeled compromises;
+we generate attack labels on real structure (Enron, SNAP) or on a synthetic population of twins.
+We therefore validate the \emph{mechanism} (out-of-rhythm mail separates compromises; layer
+inconsistency separates impersonation), not the detection of real intrusions. The OSINT multiplex
+advantage (Invariant~I) remains \textbf{exclusively synthetic} --- we read it
+as a proof of soundness, not a measurement on real traffic. We also note a degree of
+\emph{circularity}: the synthetic population is generated graph-first, so detecting a violation of that
+structure is in part built in. Consistent with this, the layer analysis (\ref{sec:res-inv1}) shows the
+\emph{temporal} layer carries almost all of Invariant~I's signal, the structural and OSINT layers
+contributing little unless the topology is artificially decorrelated; the headline of Invariant~I thus
+reduces, in practice, to ``rhythm consistency detects off-rhythm mail'', whereas the cascade result
+(Invariant~II) establishes the receiving-side signal far more robustly on real graphs. \emph{Second, the susceptibility measurement
+inherits these assumptions}: the $\mathrm{Susc}$ figures are relative to our event model
+and population structure (19~companies~$\times\sim$8~people, one domain per company); the direction of the conclusions
+(relationship~$>$~rank; periphery most exposed) is qualitatively robust, but the exact values
+are not directly transferable to every organization. The direction is moreover partly
+\emph{definitional}: executives are layer-rich \emph{by construction}, so their stronger structural
+protection follows in part from how we tied layer richness to seniority --- a coupling that should be
+stress-tested under alternative assignments before the ``periphery first'' recommendation is generalized. \emph{Third, the scale is limited}
+($N{=}150$ twins; real graphs up to~$\sim$2k nodes), so the comparison
+with heavy GNN architectures (GATNE/HGT) is treated as a sanity check, not a full benchmark.
+\emph{Fourth, the operational threshold}: even the best operating point (sensitivity@FPR$1\%$) remains
+orders of magnitude away from the deployment threshold on real mail (Ho et al.\ \citep{ho2019detecting}:
+$<\!4$~FP/M); we report it as a \emph{requirement we are beginning to meet}, not an absolute record.
+
+\subsection{Future work directions}
+\begin{itemize}[noitemsep,topsep=2pt]
+  \item \textbf{Real BEC labels.} The most important next step is validation on a corpus
+  with labeled, real compromises --- to turn the proof of mechanism into a measurement of detectability.
+  \item \textbf{A learned, inductive domain knowledge graph.} Replacing the hand-crafted consistency features
+  with a learned multiplex GNN with explicit cross-layer consistency regularization, validated
+  inductively on unseen organizations.
+  \item \textbf{Adaptive attack and drift.} Studying an attacker that \emph{learns}
+  the domain knowledge graph (LLM~$+$~OSINT \citep{bethany2024evaluating}) and tunes rhythm/relationships, as well as population drift
+  over time (TESSERACT \citep{pendlebury2019tesseract}).
+  \item \textbf{Susceptibility as a steering signal.} Using the measured $\mathrm{Susc}$ for
+  dynamic prioritization of controls and personalization of training --- with an evaluation of whether it lowers the real
+  click-through rate.
+\end{itemize}

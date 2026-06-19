@@ -1,0 +1,7 @@
+Highlights
+
+- Cascade dynamics flag lateral phishing from a receiving-side wave signature.
+- The cascade signal survives stealthy attacks where volume detection collapses.
+- Cross-layer inconsistency is validated synthetically as a proof of soundness.
+- Leak-aware evaluation and a predictivity probe bound detection effectiveness.
+- Susceptibility is governed by relation, not organizational rank or seniority.

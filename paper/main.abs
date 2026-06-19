@@ -1,0 +1,22 @@
+Modern email filters detect mass phishing with high effectiveness ($\sim$98\%) from \emph{content}
+and reputation, yet the residual --- \textbf{spear phishing} and \textbf{Business Email Compromise
+(BEC)} --- is the most costly and nearly undetectable by them. We argue this is structural: a targeted
+attack succeeds \emph{precisely because} it \textbf{respects the victim's domain knowledge}, so the signal
+lies not in content but in its \emph{inconsistency} with that knowledge and in the attack's
+\emph{propagation dynamics}. We model the organizational \textbf{domain knowledge graph} as a multiplex
+of relations and study two invariants of its violation.
+
+Our strongest result is \textbf{cascade dynamics}: a compromised account propagates off its own rhythm,
+leaving a \emph{receiving-side} wave signature that persists under a \emph{stealthy} attacker --- where
+volume-based detection falls below random --- and replicates across three real graphs (Enron, SNAP) with
+large effect sizes. The complementary \textbf{cross-layer inconsistency} invariant we validate
+\emph{synthetically}, as a proof of soundness, not a deployment result: its OSINT multiplex stays
+synthetic even on real graphs and a temporal layer dominates the signal --- which we report rather than
+overstate.
+
+The central, detector-independent contribution is \textbf{methodological}: a \emph{leak-aware} evaluation
+with shuffle controls, a \emph{predictivity probe} for cross-topology transfer, and explicit base-rate
+accounting that locates the operational limits (far from deployment thresholds). An \textbf{organizational
+susceptibility metric} shows exposure is governed by relation, not rank. The contribution is thus a
+concept, a measurement methodology, and a triage signal, with learning models as off-the-shelf
+instruments: spear phishing becomes \emph{measurable}, not yet operationally solved.

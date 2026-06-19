@@ -1,0 +1,16 @@
+K,model,auc,recall_fpr1
+1,compa,0.4414,0.0167
+1,tab_ctx,0.6579,0.0385
+1,gnn_temporal,0.6007,0.0392
+2,compa,0.555,0.0214
+2,tab_ctx,0.7412,0.0508
+2,gnn_temporal,0.7449,0.0984
+3,compa,0.5821,0.0247
+3,tab_ctx,0.6609,0.0115
+3,gnn_temporal,0.769,0.0426
+5,compa,0.679,0.044
+5,tab_ctx,0.7014,0.0168
+5,gnn_temporal,0.7834,0.061
+999,compa,0.7244,0.0469
+999,tab_ctx,0.7324,0.0149
+999,gnn_temporal,0.8511,0.1141

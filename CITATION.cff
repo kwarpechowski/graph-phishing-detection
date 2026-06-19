@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite both the article and this archive."
+title: "Spear Phishing as a Violation of the Domain Knowledge Graph — reproducibility package"
+abstract: >-
+  Reproducibility package (LaTeX manuscript, experiment code, synthetic population,
+  and computed results) for the paper "Spear Phishing as a Violation of the Domain
+  Knowledge Graph: Cascade Dynamics and Leak-Aware Evaluation".
+type: software
+authors:
+  - family-names: Warpechowski
+    given-names: Kamil
+    affiliation: "Kozminski University; NASK National Research Institute"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"   # TODO: add ORCID
+  - family-names: Księżopolski
+    given-names: Bogdan
+    affiliation: "Kozminski University"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"   # TODO: add ORCID
+version: "1.0.0"
+date-released: "2026-06-18"
+license: MIT
+keywords:
+  - spear phishing
+  - Business Email Compromise
+  - domain knowledge graph
+  - cross-layer inconsistency
+  - temporal cascade dynamics
+  - organizational susceptibility
+  - leak-aware evaluation
+  - graph neural networks
+# TODO before publishing:
+#   - add the article DOI under preferred-citation once the paper is accepted
+#   - add the Zenodo DOI under identifiers once reserved

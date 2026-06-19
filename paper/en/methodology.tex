@@ -1,0 +1,346 @@
+% ============================================================
+% Methodology — core of the work (target: Computers & Security)
+% Domain knowledge graph + threat model + 2 invariants + susceptibility + leak-aware
+% ============================================================
+\section{Methodology}
+\label{sec:method}
+
+The methodology comprises four elements: the formalization of the \emph{domain knowledge graph}
+(\ref{sec:dkg}), a unified \emph{threat model} for lateral/BEC and external impersonation
+(\ref{sec:threat}), two \emph{detection invariants} (\ref{sec:invariants}), and a \emph{susceptibility
+metric} together with a \emph{leak-aware evaluation protocol} (\ref{sec:susceptibility}, \ref{sec:eval}).
+
+\subsection{Domain knowledge graph}
+\label{sec:dkg}
+An organization's domain knowledge --- who knows whom, who is responsible for what, what competencies,
+routines, and public footprints they have --- is \emph{relational}. We model it as a multiplex network.
+
+\begin{definition}[Domain knowledge graph]
+\label{def:dkg}
+A domain knowledge graph is $\mathcal{G}=(V,\{E_L\}_{L\in\mathcal{L}},\{w_L\},\tau)$, where $V$ is the set of
+accounts (people/roles), $\mathcal{L}$ is the set of relation \emph{layers} over the \emph{same} $V$ (contacts,
+hierarchy, collaboration, shared competencies/conferences/certificates, platforms, routines --- OSINT
+footprints from fields \texttt{c3}--\texttt{c8}), $w_L\in(0,1]$ is the confidence weight of a layer, and
+$\tau:V\!\times\!V\!\to\!\mathcal{T}$ assigns to edges a \emph{temporal rhythm} (the sender's active windows).
+Each layer encodes \emph{one type} of domain fact; superimposed, they form the entire knowledge of ``what is
+normal''.
+\end{definition}
+
+\noindent The key property is the \emph{complementarity} of layers: a genuine relation is consistent across
+many of them at once (a known contact, in their own rhythm, with a real collaboration footprint), whereas a
+fabricated fact or a compromise breaks this consistency. For a pair $(s,v)$ we define the \emph{domain-knowledge
+coverage} $C(s,v)=\sum_{L}w_L\,\mathbf{1}[(s,v)\in E_L]$ and the \emph{temporal consistency}
+$tc(s,v,t)=\mathbf{1}[t\in\tau(s)]$.
+
+\subsection{Threat model: unifying lateral and external}
+\label{sec:threat}
+\textbf{Attacker goal:} deliver to victim $v$ a message classified as legitimate.
+\textbf{Two variants} are covered by a single formalism:
+\begin{itemize}[noitemsep,topsep=2pt]
+  \item \emph{Lateral/BEC} --- the sender $s$ is a \emph{compromised internal account} (a known contact of $v$),
+  writing \emph{outside} its rhythm: high $C(s,v)$, yet $tc(s,v,t){=}0$ (temporal inconsistency);
+  \item \emph{External impersonation} --- $s$ impersonates a role/authority, giving the \emph{impression} of
+  high $C$, yet lacking real coverage in part of the layers (low structural consistency), possibly with
+  \emph{fabrication} of OSINT edges.
+\end{itemize}
+In both cases the spear phisher \emph{respects} the domain knowledge (hence the content's credibility), yet
+\emph{cannot reproduce it in full} --- it is precisely this inconsistency that is the signal.
+\textbf{Capabilities:} upon compromise the attacker has mailbox access (knows the rhythm --- rhythm mimicry is
+possible); fabrication of OSINT footprints is cheap, yet does not create multilayer consistency. \emph{Out of
+scope}: an adaptive adversary with full knowledge of the graph and training poisoning --- we treat the signal
+as a \emph{cost increase}, not an ultimate defense.
+
+\subsection{Two detection invariants}
+\label{sec:invariants}
+\textbf{(I) Cross-layer inconsistency (static).} A legitimate new sender is \emph{outside} the contacts layer,
+yet \emph{on} the OSINT layer (a shared list/affiliation) --- this consistency justifies them; a compromised
+account is \emph{on} the contacts layer, yet \emph{outside} the rhythm --- this inconsistency betrays it. The
+detector reads the vector of layer membership and its (in)consistency, not the content.
+
+\textbf{(II) Cascade dynamics (temporal).} Lateral phishing is a \emph{propagation process}: a compromised
+account sends to contacts, from them to the next ones. A single message looks locally normal, yet the wave
+creates a \emph{receiving signature}: an atypical pattern of ``who in the victim's neighborhood was hit within
+the window''. A learned temporal GNN with node memory reads this pattern, classifying an event using the state
+\emph{from before} its bucket (without label leakage).
+
+Both invariants are \emph{complementary by attack mode}: static inconsistency catches new
+senders/impersonation, dynamics --- compromises in the graph. No single layer suffices; the signal is the
+\emph{fusion} and its (in)consistency.
+
+\subsection{Organization susceptibility metric}
+\label{sec:susc-def}
+The domain knowledge graph allows us to \emph{measure} which roles and relations are most exposed.
+We define the \emph{susceptibility} of node $v$ as the expected \emph{detection uniqueness} of the best
+\emph{credible} (domain-knowledge-respecting) attack targeting $v$:
+\begin{equation}
+\mathrm{Susc}(v) \;=\; \max_{s\in \mathcal{A}(v)} \Big(1 - \Pr[\text{detector detects } (s\!\to\!v)]\Big),
+\label{eq:susc}
+\end{equation}
+where $\mathcal{A}(v)$ is the set of \emph{plausible} impersonating senders of $v$ (high apparent
+$C$, e.g.\ authority/cross-departmental bridge). Intuitively: a node is susceptible when there exists a
+\emph{credible} yet hard-to-detect attack. Operationally, we correlate $\mathrm{Susc}(v)$ with features of the
+position in the domain knowledge graph: authority/centrality, the number of cross-community bridges,
+\emph{rhythm regularity} (a paradox: a regular rhythm facilitates detection of a \emph{compromise}, yet
+predictability facilitates \emph{impersonation}), and OSINT coverage. The result is an \emph{organization
+susceptibility profile}: which roles (e.g.\ finance, executive assistants, cross-departmental bridges) require
+reinforced control --- a contribution useful for SOC teams independently of the detector itself.
+
+\subsection{Leak-aware evaluation protocol and the definition of effectiveness}
+\label{sec:eval}
+Rigorous evaluation here is a \emph{contribution}, not a formality. Graph detectors are easy to inflate;
+we therefore enforce:
+\begin{enumerate}[noitemsep,topsep=2pt]
+  \item \textbf{Matched design} --- legitimate traffic and attack are edges with the \emph{same} distribution
+  of endpoints/degrees; they differ \emph{solely} by the relational-temporal pattern (removing the
+  degree/identity confounder) \citep{arp2022dos}.
+  \item \textbf{Leak control} --- temporal split of rhythm estimation, audit of the fraction of out-of-rhythm
+  mail, control of temporal-order shuffling; each zeroes the signal if it is an artifact
+  \citep{pendlebury2019tesseract}.
+  \item \textbf{Operational metrics} --- sensitivity at low FPR (not headline AUC), with explicit base-rate
+  arithmetic (precision at a realistic prevalence of $1{:}10^4$--$10^6$).
+  \item \textbf{Predictivity probe} --- does the method ranking established on one topology \emph{transfer}
+  to another (real Enron, SNAP graphs)? A method ``works'' \emph{operationally} if its advantage is
+  \emph{causally} relational-temporal (vanishing under controls) and \emph{transferable} beyond a single
+  corpus --- this is our working \textbf{definition of effectiveness}.
+\end{enumerate}
+\noindent Under this definition, ``$98\%$ on a mass benchmark'' does not attest to detecting spear
+phishing; what counts is sensitivity to the \emph{residual} $2\%$ at an operational FPR, robustness to leaks,
+and transfer across organizations.
+
+\paragraph{Data and population.} We conduct experiments on an \emph{ethically constraining} synthetic
+population of related personas (without data of real people, consent, or GDPR
+\citep{brown2025web}) and on \emph{real} communication graphs (Enron, SNAP networks
+\citep{leskovec2014snap}), where the \emph{structure} is real, and attack labels are controlled
+injections (we validate the \emph{mechanism} and the \emph{topology}, not the detection of actual incidents).
+
+% ============================================================
+% OPERATIONAL PART — details ported from P1 (multiplex) and P2 (cascade)
+% ============================================================
+\subsection{Synthetic population and domain knowledge schema}
+\label{sec:m-pop}
+We realize the domain knowledge graph on $N{=}150$ synthetic personas generated by a
+\emph{graph-first} method: an organization graph was designed deterministically ($19$~companies of $\sim\!8$~people each,
+with a supervisor--subordinate hierarchy and business partners between companies), and then
+each persona was generated \emph{in its node}, so that its relations (supervisor,
+coworkers, external contacts) are \emph{real other personas} --- the graph closes
+internally. The size $N{=}150$ was chosen to match the number of core users of the Enron corpus \citep{klimt2004enron},
+enabling external validation of the synthetic graph against the real one at the same
+scale.
+
+\paragraph{Persona schema (eight-category taxonomy).} Each persona is a record with a fixed schema
+\texttt{c1}--\texttt{c8}: \texttt{c1}~--- professional identity (company, role, tenure); \texttt{c2}~---
+\emph{relationships} (supervisor, coworkers, external contacts); \texttt{c3}~--- competencies;
+\texttt{c4}~--- public footprint (interests, OSS, conferences, publications); \texttt{c5}~--- contact
+channels (platforms, handles); \texttt{c6}~--- temporal context; \texttt{c7}~--- persuasion profile (authority,
+scarcity, social proof --- per Cialdini); \texttt{c8}~--- threat model (risk scenarios,
+plausible senders). It is precisely these fields that constitute the \emph{domain knowledge material}
+available to the attacker from OSINT; the graph layers (\ref{sec:m-layers}) are derived from them deterministically.
+Table~\ref{tab:fielddist} reports how densely these fields are populated, confirming that the derived OSINT layers are well supported.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Field} & \textbf{\% non-empty} & \textbf{avg.\ per person} & \textbf{unique values} \\
+\midrule
+\texttt{c3.skills} & $100\%$ & $4.5$ & $271$ \\
+\texttt{c3.certifications} & $100\%$ & $1.8$ & $130$ \\
+\texttt{c4.interests} & $100\%$ & $4.0$ & $194$ \\
+\texttt{c4.conferences} & $100\%$ & $2.1$ & $193$ \\
+\texttt{c6.upcoming\_events} & $100\%$ & $1.9$ & $205$ \\
+\texttt{c8.routine\_communications} & $100\%$ & $3.2$ & $316$ \\
+\texttt{c8.plausible\_pretexts} & $100\%$ & $3.7$ & $474$ \\
+\texttt{c5.platforms} & $100\%$ & $2.5$ & $29$ \\
+\bottomrule
+\end{tabular}
+\caption{Persona field distribution (\texttt{c3}--\texttt{c8}) used as OSINT layers on the population of
+$150$~personas: each field is densely filled, which makes the derived layers meaningful.}
+\label{tab:fielddist}
+\end{table}
+
+\subsection{Operationalizing Invariant~I: multiplex layers}
+\label{sec:m-layers}
+Each layer is a separate graph over the same set of $150$~nodes (Fig.~\ref{fig:realgraph}, Tab.~\ref{tab:layers}).
+The \emph{structural} layers (contacts, hierarchy, domain) are derived from the organization graph; the
+\emph{OSINT} layers are built directly from fields \texttt{c3}--\texttt{c8} --- two personas are joined by an edge
+in a given layer when they share a concrete, publicly observable field value
+(co-occurrence). \emph{Generic} values (e.g.\ ``LinkedIn'', ``Microsoft 365'') are filtered out,
+and fields yielding a degenerate layer (almost a complete graph) or one that is too sparse are omitted ---
+this is a realistic data limitation, not a designed convenience. The \emph{only} adversarial knob
+is the \emph{fabrication rate} (how many OSINT edges the attacker artificially injects), with which we study
+robustness.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{llcc}
+\toprule
+\textbf{Layer} & \textbf{Edge (shared fact)} & \textbf{Weight} & \textbf{\#edges} \\
+\midrule
+Contacts & sender wrote to recipient & $1.0$ & $556$ \\
+Hierarchy & same company & $0.9$ & $518$ \\
+Domain & same mail domain & $0.8$ & $538$ \\
+OSINT: conferences & shared conference (\texttt{c4}) & $0.6$ & $167$ \\
+OSINT: certificates & shared certificate (\texttt{c3}) & $0.6$ & $389$ \\
+OSINT: skills & shared skill (\texttt{c3}) & $0.5$ & $1144$ \\
+OSINT: routine & shared communication pattern (\texttt{c8}) & $0.4$ & $397$ \\
+OSINT: events & shared event (\texttt{c6}) & $0.4$ & $134$ \\
+OSINT: platforms & shared platform/handle (\texttt{c5}) & $0.4$ & $534$ \\
+OSINT: pretexts & shared plausible pretext (\texttt{c8}) & $0.3$ & $159$ \\
+OSINT: interests & overlapping interests (\texttt{c4}) & $0.3$ & $53$ \\
+Temporal & co-activity in the same hours & $0.5$ & $2528$ \\
+\bottomrule
+\end{tabular}
+\caption{Multiplex layers (eight OSINT types from real fields \texttt{c3}--\texttt{c8}): edge
+semantics, confidence weight, and the number of edges on the population of $150$~personas. The structural layers
+strongly overlap (redundancy, \ref{sec:res-inv1}); the temporal consistency layer is
+the most important.}\label{tab:layers}
+\end{table}
+
+\paragraph{Temporal layer.} It models the \emph{activity rhythm} of an account. We divide the week into $T{=}28$
+time buckets (7~days $\times$ 4~six-hour blocks); an account's rhythm is the set of its active buckets.
+In the synthetic part each persona has $6$~active buckets; on the real Enron data the rhythm is
+derived from the \texttt{Date} headers. Realistic noise: $15\%$ of legitimate mail arrives outside the
+rhythm, and $25\%$ of attacks mimic the rhythm. Formally, for a pair $(s,v)$ we define the \emph{cross-layer
+consistency} as the weighted number of layers in which the pair co-occurs,
+\begin{equation}
+C(s,v) \;=\; \sum_{L\in\mathcal{L}} w_L\,\mathbf{1}\!\left[(s,v)\in E_L\right],
+\label{eq:consistency}
+\end{equation}
+and the \emph{inconsistency} signal is a high $C(s,v)$ (strong structural familiarity) coupled with a
+simultaneous temporal anomaly (arrival outside the rhythm $R_s$).
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.72\linewidth]{fig_multiplex_3d.pdf}
+\caption[Real training graph: multiplex layers]{Domain knowledge graph ($150$~nodes):
+contacts, representative OSINT layers (conferences, certificates, skills, platforms), and time ---
+over the \emph{same} set of accounts. Each layer carries \emph{different} connectivity, which makes
+cross-layer inconsistency informative.}
+\label{fig:realgraph}
+\end{figure}
+
+\subsection{Operationalizing Invariant~II: cascade and temporal GNN}
+\label{sec:m-cascade}
+The second invariant operates on the contacts graph $G=(V,E)$ with time divided into $T{=}28$ buckets.
+An \emph{attack} is a cascade: a ``patient-zero''~$s_0$ sends malicious mail to contacts;
+each recipient with probability $p_\mathrm{inf}{=}0.6$ becomes a \emph{carrier} and propagates
+further to depth $H{=}4$. A single event $u\!\to\!v$ is \emph{locally} indistinguishable
+from legitimate mail ($u$ \emph{is} a contact of $v$); the signal lies in the \emph{cascade context}: within the wave's window
+many of $v$'s neighbors receive mail, and $u$ was hit just before
+(Fig.~\ref{fig:cascade}).
+
+\begin{figure}[t]\centering
+\resizebox{0.92\columnwidth}{!}{%
+\begin{tikzpicture}[>=Latex, every node/.style={font=\small},
+  acc/.style={circle, draw, minimum size=7mm, inner sep=1pt},
+  inf/.style={acc, fill=red!18, draw=red!70!black},
+  ben/.style={acc, fill=blue!8},
+  mal/.style={-{Latex[length=2mm]}, red!70!black, thick}]
+  \node[inf] (p) at (0,0) {$s_0$};
+  \node[ben] (a) at (2.4,0.9) {$A$};
+  \node[ben] (b) at (2.4,-0.9) {$B$};
+  \draw[mal] (p)--(a); \draw[mal] (p)--(b);
+  \node[ben] (c) at (4.8,1.6) {$C$};
+  \node[ben] (d) at (4.8,0.4) {$D$};
+  \node[ben] (e) at (4.8,-0.9) {$E$};
+  \draw[mal] (a)--(c); \draw[mal] (a)--(d); \draw[mal] (b)--(e);
+  \node[ben] (f) at (7.0,1.0) {$F$};
+  \draw[mal] (c)--(f);
+  \node[gray] at (0,-2.1) {bucket $t_0$};
+  \node[gray] at (3.6,-2.1) {$t_1$};
+  \node[gray] at (5.9,-2.1) {$t_2$};
+  \draw[gray, dashed] (1.2,-1.8) -- (1.2,2.1);
+  \draw[gray, dashed] (3.6,-1.8) -- (3.6,2.1);
+  \draw[gray, dashed] (5.9,-1.8) -- (5.9,2.1);
+  \node[red!70!black, align=center, font=\scriptsize] at (3.6,2.7)
+    {edge $A\!\to\!C$ \emph{locally} = ordinary mail from a known contact;\\
+     signal = \emph{synchronized burst} of the wave and sender \emph{freshness}};
+\end{tikzpicture}}
+\caption[Lateral phishing as a temporal cascade]{Lateral phishing as a temporal cascade: a carrier ($s_0$)
+infects contacts, those --- their own, and the wave propagates across the graph. Detection requires \emph{multi-hop,
+temporal} propagation context.}
+\label{fig:cascade}
+\end{figure}
+
+\paragraph{Detectors.} We compare: \textbf{1-hop} (\texttt{LightGBM} on local features --- lower bound);
+\textbf{hand-crafted cascade context} (1-hop $+$ burst/freshness/wave density ---
+a strong baseline encoding the multi-hop signal by hand); \textbf{static GNN} (mean aggregation
+over the contacts graph --- it sees the topology, not time); \textbf{temporal GNN (TGN-lite)}
+with node memory updated bucket by bucket. Formally, the static GNN builds
+embeddings from the aggregated graph with a normalized adjacency matrix $\hat{A}$ and features $X$:
+\begin{equation}
+H = \hat{A}\,\sigma\!\big(\hat{A}\,X\,W_1\big)\,W_2,
+\qquad
+\mathrm{score}_{\mathrm{stat}}(s,v) = g\!\big([\,H_s,\,H_v,\,H_s\!\odot\!H_v,\,x_{sv}\,]\big),
+\label{eq:static}
+\end{equation}
+whereas the temporal GNN maintains a memory $m_v^{(b)}$ and scores an event of bucket~$b$ using the state
+\emph{from before} its update (causality, no leakage):
+\begin{align}
+\mathrm{score}_{\mathrm{temp}}(s,v,b) &= g\!\big([\,m_s^{(b-1)},\,m_v^{(b-1)},\,m_s^{(b-1)}\!\odot\!m_v^{(b-1)},\,x_{sv}\,]\big),
+\label{eq:temp-score}\\
+m_v^{(b)} &= \mathrm{GRU}\!\Big(\tfrac{1}{d_v^{(b)}}\!\!\sum_{u:\,(u\to v)\in b}\!\!\sigma\!\big(W_m\,m_u^{(b-1)}\big),\; m_v^{(b-1)}\Big).
+\label{eq:temp-mem}
+\end{align}
+The node features are \emph{structural} (not learning identity), which makes the model
+\emph{inductive} --- it works for accounts unseen in training. Because $\mathrm{score}_{\mathrm{stat}}$
+is permutation-invariant with respect to time, whereas $\mathrm{score}_{\mathrm{temp}}$ is not, the drop in
+$\mathrm{AUC}_{\mathrm{temp}}$ after time shuffling \emph{measures exactly} the amount of temporal
+information used --- this is the formal justification of the shuffle control.
+
+\paragraph{Baselines for compromises.} Beyond the GNN we implement two strong, practical methods:
+a \emph{volumetric baseline} in the spirit of COMPA \citep{egele2013compa,stringhini2015thataint} (a sudden spike in a
+sender's sending volume within a window $W{=}2$; \texttt{IsolationForest}) and a \emph{path-based baseline} in the spirit of Hopper
+\citep{ho2021hopper} (causal precursor $+$ momentum $+$ rare target). \emph{Attribution caveat:}
+we implement their structural-temporal core, not the full systems --- hence we write ``volumetric''
+and ``path-based''. The hyperparameters of all detectors are \emph{fixed uniformly, without
+intensive tuning} (Tab.~\ref{tab:hparams}) --- no detector enjoys a tuning advantage,
+which we note as a fidelity limitation and at the same time a guarantee of fairness of the comparison.
+
+\begin{table}[t]\centering\small
+\begin{tabular}{ll}
+\toprule
+Model / component & Hyperparameters (fixed, without tuning) \\
+\midrule
+GNN (static / TGN-lite / TGAT-lite) & $\mathrm{DIM}{=}24$; TGAT: $t_{\dim}{=}8$; $100$~epochs; \\
+                                       & Adam $\mathrm{lr}{=}0.01$, $\mathrm{wd}{=}5\!\cdot\!10^{-4}$; dropout $0.2$ \\
+GNN classifier head           & MLP, $48$ hidden units \\
+Tabular detectors (LightGBM)      & $\mathrm{n\_estimators}{=}200$--$250$, $\mathrm{seed}{=}42$, \\
+                                       & $\mathrm{num\_leaves}{=}31$, $\mathrm{lr}{=}0.1$ \\
+volumetric (per account)                  & window $W{=}2$~buckets; IsolationForest ($150$, auto) \\
+\bottomrule
+\end{tabular}
+\caption{Detector hyperparameters --- fixed \emph{uniformly} for all models of a given family,
+framework defaults or lightly chosen, without grid search.}
+\label{tab:hparams}
+\end{table}
+
+\subsection{Event model, features, and split}
+\label{sec:m-events}
+An event is a pair (sender~$s$, victim~$v$) with a bucket~$b$, labeled legitimate/attack, with two-sided
+noise (to avoid perfect separability). \textbf{Legitimate~(0):} \emph{known} (a contact, in rhythm);
+\emph{new-OSINT} (outside contacts, yet on the OSINT layer); \emph{cold} (outside all layers ---
+an irreducible source of FP). \textbf{Attacks~(1):} \emph{BEC from outside the graph} (outside everything, outside the rhythm);
+\emph{compromised account} (a known contact outside the rhythm). For Invariant~I we compare three feature sets
+(\emph{contacts-only}, \emph{static multiplex}, \emph{full} $+$ temporal consistency)
+with a \texttt{LightGBM} classifier; the split is \emph{victim-wise} (disjoint victim sets),
+$20$~seeds, $95\%$ bootstrap CI for sensitivity@FPR$1\%$. For Invariant~II we use two split
+regimes: \emph{victim-wise} and \emph{organization-wise} (test companies disjoint from training ones
+--- \emph{inductive} validation). Headline claims are hardened over~$\ge\!20$~seeds; validations on
+real graphs are reported at $8$/$5$/$3$~seeds (lower variance on a fixed structure)
+with a Wilcoxon test where significance is crucial.
+
+\subsection{Metrics, causal controls, and threats to validity}
+\label{sec:m-metrics}
+The headline metric is \textbf{sensitivity at FPR$=1\%$} (the operational working point):
+$\text{sensitivity}@\mathrm{FPR{=}1\%} = \max\{\mathrm{TPR}(\tau):\mathrm{FPR}(\tau)\le0.01\}$;
+we report AUC auxiliarily. \textbf{Note on the threshold:} real systems operate at a much stricter
+FPR ($<\!4$~FP/million, \citep{ho2019detecting}), so FPR$1\%$ is a \emph{liberal lower bound}, not a deployment
+threshold; at a realistic prevalence of $1{:}10^4$--$10^6$ precision follows directly from Bayes' theorem
+(\ref{sec:res-rigor}). \textbf{Causal controls:} \emph{layer/rhythm shuffling} (for Invariant~I)
+and \emph{temporal-order shuffling} (for Invariant~II) --- if the signal is
+structural-temporal, the control must destroy the advantage (AUC$\to$random).
+
+\paragraph{Threats to validity.} \emph{Internal}: layer redundancy (we measure Jaccard
+before the gain claim) and label leakage (we separate features from the hidden infection state; the shuffle
+control isolates the mechanism). \emph{External}: the population is synthetic; we validate the mechanism
+on real Enron and two SNAP graphs --- the synthetic data lets us \emph{control} coverage and fabrication
+at the cost of absolute effects. \emph{Construct}: sensitivity@FPR$1\%$ reflects the
+low-FPR regime instead of headline AUC, in line with the caution of \citep{arp2022dos,pendlebury2019tesseract}.

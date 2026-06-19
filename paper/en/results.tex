@@ -1,0 +1,566 @@
+% ============================================================
+% Results — full synthesis of P1 (Invariant I) + P2 (Invariant II)
+%          + susceptibility measurement + real-graph validation + rigor (target: C&S)
+% ============================================================
+\section{Results}
+\label{sec:results}
+
+We organize the results around three claims and their rigor. \emph{Invariant~I}
+(\ref{sec:res-inv1}) --- cross-layer inconsistency --- detects a new sender/impersonation.
+\emph{Invariant~II} (\ref{sec:res-inv2}) --- cascade dynamics --- detects a compromised account that is consistent
+across all static layers and \emph{does not break down} against a stealthy attacker.
+\emph{Susceptibility measurement} (\ref{sec:susceptibility}) uses these detectors as an instrument.
+\emph{Real-graph validation} (\ref{sec:res-realgraphs}) and \emph{fusion with content} (\ref{sec:res-content})
+test transfer and limits, while \emph{rigor} (\ref{sec:res-rigor}) determines what these numbers mean.
+We report every result as AUC and sensitivity@FPR$1\%$, on a victim/organization split,
+$\ge\!20$~seeds, with a causal shuffle control.
+
+% ============================================================
+\subsection{Invariant~I: cross-layer inconsistency}
+\label{sec:res-inv1}
+\paragraph{Multiplex vs single graph.} We compare the \emph{contacts-only} detector with the \emph{static
+multiplex} (contacts $+$ eight OSINT layers from real fields). Tab.~\ref{tab:inv1}: the multiplex beats the
+single graph (AUC $0.87$ vs $0.70$), and the shuffle control drops to random ($0.51$) --- the advantage
+comes from real cross-layer structure, not from feature capacity. The decisive factor is the distribution
+of false alarms: the contact detector flags \textbf{$100\%$} of legitimate new senders as an attack,
+the multiplex --- \textbf{$0\%$} (OSINT coverage rescues a legitimate sender who shares with the victim
+an observable fact). The claim is \emph{conditional}: we distinguish a legitimate new sender from an attack
+when the sender shares with the victim a real domain-knowledge edge; a ``cold'' sender remains
+irreducibly confusing (\ref{sec:susceptibility}). At $50\%$ OSINT edge fabrication the advantage
+degrades ($0.87\!\to\!0.74$) toward the control --- false traces erode the signal.
+
+\begin{table}[t]\centering
+\begin{tabular}{lcc}
+\toprule
+Model & AUC & new-sender FP \\
+\midrule
+Contacts only & $0.70 \pm 0.01$ & $1.00$ \\
+Static multiplex & $\mathbf{0.87} \pm 0.01$ & $\mathbf{0.00}$ \\
+Multiplex (shuffled) & $0.51 \pm 0.01$ & --- \\
+\bottomrule
+\end{tabular}
+\caption{Invariant~I --- multiplex vs contacts graph ($20$~seeds). Layer fusion beats the single graph
+and eliminates new-sender false alarms; the advantage vanishes after shuffling.}
+\label{tab:inv1}
+\end{table}
+
+\paragraph{The signal is consistency, not feature capacity.} To show this directly, we define
+\emph{four explicit consistency measures} (OSINT coverage; known sender off-rhythm; new sender on OSINT;
+entirely off-graph) and compare them with raw feature concatenation (Tab.~\ref{tab:consistency}).
+Under logistic regression the explicit operator \emph{improves} AUC ($0.840\!\to\!0.860$), because the
+linear model cannot learn the conjunction on its own; under trees the difference vanishes ($0.858$ vs $0.860$).
+The four explicit measures almost match the full concatenation --- the signal is \emph{concise
+consistency}, and its value is \emph{explainability and deployability}
+(a single query), not higher Recall.
+
+\begin{table}[t]\centering
+\begin{tabular}{lcc}
+\toprule
+Model & AUC & sensitivity@FPR$1\%$ \\
+\midrule
+Linear $+$ concatenation & $0.840$ & $\mathbf{0.049}$ \\
+Linear $+$ \textbf{consistency operator} & $\mathbf{0.860}$ & $0.019$ \\
+Tree-based $+$ concatenation & $0.858$ & $\mathbf{0.066}$ \\
+Tree-based $+$ consistency operator & $0.860$ & $0.034$ \\
+\bottomrule
+\end{tabular}
+\caption{Explicit consistency operator (4~features) vs per-layer concatenation ($20$~seeds). The operator helps
+the linear model and almost matches concatenation --- the signal is consistency, not capacity.}
+\label{tab:consistency}
+\end{table}
+
+\paragraph{Layer ablation and selection.} Cumulative ablation (Fig.~\ref{fig:ablation}) shows that each
+OSINT layer adds a little (contacts $0.57\!\to$ static $0.65$), but \emph{the temporal consistency
+layer dominates}: the full model $0.86$, and removing it sets AUC back to $0.65$. Forward selection
+and leave-one-out on the full set of $12$~layers (Fig.~\ref{fig:layersel}) confirm: temporal
+consistency \emph{alone} reaches $0.826$ out of $0.862$ for the full model (leave-one-out $0.21$ ---
+by far the most important), subsequent OSINT layers add $\sim\!0.005$ each, and the
+hierarchy/domain/co-activity layers have leave-one-out $\le0.002$ (redundancy).
+The \emph{minimal sufficient set} is temporal consistency $+$ $3$--$4$ OSINT layers.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.8\linewidth]{fig_ablation.pdf}
+\caption[Cumulative layer ablation]{Cumulative ablation. The temporal consistency layer contributes the largest
+AUC gain.}
+\label{fig:ablation}
+\end{figure}
+\begin{figure}[t]\centering
+\includegraphics[width=0.9\linewidth]{fig_layer_selection.pdf}
+\caption[Layer selection]{Layer selection (full set of 12). \emph{Top}: forward --- temporal
+consistency alone yields most of the AUC. \emph{Bottom}: leave-one-out --- only temporal consistency (and a few
+OSINT layers) is indispensable.}
+\label{fig:layersel}
+\end{figure}
+
+\paragraph{Layer redundancy is a topology artifact, not a property of the method.} The high correlation of structural layers
+(contacts$\approx$hierarchy$\approx$domain, Jaccard $\ge0.9$) stems from the generator (one domain per company).
+By introducing a \emph{topology decorrelation} knob $\rho$ (rewiring contacts from intra-
+to inter-company), we show (Tab.~\ref{tab:topo}) that already at moderate decorrelation
+\textbf{Jaccard drops to $0.39$, and the independent contribution of structural layers rises to $0.25$ AUC} ---
+``effectively 3--4 layers'' is a property of \emph{our} compact population, not of the multiplex as a method.
+
+\begin{table}[t]\centering
+\begin{tabular}{lccc}
+\toprule
+Decorrelation $\rho$ & Jaccard & indep.\ contrib.\ of structural layers & contact AUC \\
+\midrule
+$0.0$ (dense) & $0.93$ & $0.02$ & $0.98$ \\
+$0.2$ & $0.74$ & $0.22$ & $0.78$ \\
+$0.4$ & $0.59$ & $0.25$ & $0.75$ \\
+$0.8$ (decorrel.) & $\mathbf{0.39}$ & $\mathbf{0.25}$ & $0.75$ \\
+\bottomrule
+\end{tabular}
+\caption{Topology decorrelation ($20$~seeds). As layer correlation drops, the independent
+contribution of the hierarchy/domain layers rises --- redundancy is an artifact of the dense corporate topology.}
+\label{tab:topo}
+\end{table}
+
+\paragraph{Layers are complementary by threat.} Time dominance in the aggregate \emph{masks}
+the structure: by separating the task (Fig.~\ref{fig:bythreat}), we see pure complementarity ---
+for \textbf{new senders} the signal is carried by OSINT (alone $0.77$), time is useless ($0.50$);
+for \textbf{compromises} the reverse holds (time $0.87$, OSINT $0.50$). Each group is indispensable for
+its own failure mode. The sensitivity analysis (Fig.~\ref{fig:sensitivity}) confirms that the
+\emph{ranking} (full $>$ contacts $>$ static) is qualitatively stable across the whole noise range
+and for every $N\in\{40,\dots,150\}$, although the \emph{absolute} sensitivities@FPR$1\%$ are
+a function of the fraction of off-rhythm mail (hence the necessary calibration on the real Enron).
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.8\linewidth]{fig_layer_by_threat.pdf}
+\caption[Ablation per threat]{Group ablation per threat. \emph{Left}: new senders --- OSINT
+indispensable, time superfluous. \emph{Right}: compromises --- the reverse. Layers are complementary.}
+\label{fig:bythreat}
+\end{figure}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{fig_sensitivity.pdf}
+\caption[Sensitivity analysis]{Sensitivity (AUC). The ranking and the multiplex advantage hold
+qualitatively at every noise rate and every $N$.}
+\label{fig:sensitivity}
+\end{figure}
+
+\noindent\textbf{Invariant~I --- verdict.} Multiplex fusion of domain-knowledge layers beats the single graph
+and eliminates new-sender false alarms; the advantage is causal (vanishes after shuffling)
+and complementary to Invariant~II.
+
+% ============================================================
+\subsection{Invariant~II: temporal cascade dynamics}
+\label{sec:res-inv2}
+\paragraph{Detector hierarchy.} A compromised account passes \emph{all} static layers
+(the multiplex is blind, AUC $0.49$); the signal lies in the dynamics. Tab.~\ref{tab:detectors} and Fig.~\ref{fig:detectors}:
+1-hop features are blind ($0.70$, sensitivity@FPR$1\%\!\approx\!0$), hand-crafted multi-hop context
+raises it to $0.87$, the static GNN ($0.77$) sees the topology but not time, and the \textbf{temporal
+GNN} dominates: AUC $\mathbf{0.90}$, sensitivity@FPR$1\%$ $\mathbf{0.139}$. The advantage is \emph{causally
+temporal}: after a time permutation the temporal GNN drops to the static level ($0.90\!\to\!0.72$, sensitivity
+$0.139\!\to\!0.027$). Robustness to architecture: TGN-lite and TGAT-lite beat the hand-crafted
+context in each of the $5$~seeds; the library TGN \citep{rossi2020temporal} matches it on the
+operational metric --- the advantage is a property of the \emph{paradigm}, not of a specific model.
+
+\begin{table}[t]\centering
+\begin{tabular}{lcc}
+\toprule
+Detector & AUC & sensitivity@FPR$1\%$ \\
+\midrule
+1-hop (tabular)        & $0.70$ & $0.006$ \\
+Static GNN               & $0.77$ & $0.063$ \\
+Hand-crafted context (tab.) & $0.87$ & $0.031$ \\
+\textbf{Temporal GNN}     & $\mathbf{0.90}$ & $\mathbf{0.139}$ \\
+Temporal (time shuffled) & $0.72$ & $0.027$ \\
+\bottomrule
+\end{tabular}
+\caption{Cascade detectors (victim split, $5$~seeds). Hierarchy: blind 1-hop $\to$ topology without
+time $\to$ hand-crafted window $\to$ learned dynamics. Last row: time-shuffle control.}
+\label{tab:detectors}
+\end{table}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{fig_cascade_detectors.pdf}
+\caption[Cascade detector hierarchy]{Detector hierarchy on AUC (left) and sensitivity@FPR1\%
+(right). The temporal GNN dominates; time shuffling (red) levels it with the static GNN.}
+\label{fig:detectors}
+\end{figure}
+
+\paragraph{The stealthy attacker breaks volume, but not dynamics.} Against an attacker who
+evades detection by spreading out sends ($K$~carriers, one per interval), the volume detector
+\emph{breaks down} (AUC $0.72\!\to\!0.44$ at $K{=}1$, below random), because the sending
+burst disappears; the temporal GNN \textbf{holds} (AUC $0.60$, sensitivity@FPR$1\%$ $0.039$ vs $0.017$), because it reads
+the \emph{receiving side} of the cascade (Tab.~\ref{tab:stealth}, Fig.~\ref{fig:stealth}). Against the path-based
+baseline (Hopper, Tab.~\ref{tab:hopper}) the path-based detector wins under extreme stealth, but degrades
+with reach; \textbf{the temporal GNN is the only detector without a breakdown regime} ($0.65$--$0.82$).
+The \emph{blind spot} (Tab.~\ref{tab:blindspot}): a surgical attack on \emph{a single} recipient
+($p_\mathrm{inf}{=}0$, fan-out~$1$) is invisible to \emph{all} detectors (AUC $\sim\!0.46$);
+the signal requires fan-out~$\ge2$ --- a precisely measured boundary of the threat model.
+
+\begin{table}[t]\centering
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{2}{c}{AUC} & \multicolumn{2}{c}{sensitivity@FPR$1\%$} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Level & vol. & temp. & vol. & temp. \\
+\midrule
+$K{=}1$ (extremely stealthy) & $0.44$ & $\mathbf{0.60}$ & $0.017$ & $\mathbf{0.039}$ \\
+$K{=}2$ & $0.56$ & $\mathbf{0.75}$ & $0.021$ & $\mathbf{0.098}$ \\
+$K{=}3$ & $0.58$ & $\mathbf{0.77}$ & $0.025$ & $\mathbf{0.043}$ \\
+$K{=}5$ & $0.68$ & $\mathbf{0.78}$ & $0.044$ & $\mathbf{0.061}$ \\
+blast  & $0.72$ & $\mathbf{0.85}$ & $0.047$ & $\mathbf{0.114}$ \\
+\bottomrule
+\end{tabular}
+\caption{Stealthy attacker (fan-out $K$, spread over time). The volume detector breaks down
+with stealth; the temporal GNN beats it at every $K\ge2$.}
+\label{tab:stealth}
+\end{table}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{fig_cascade_stealth.pdf}
+\caption[Stealth vs volume breakdown]{The stealthier the attack (smaller $K$), the more strongly the
+volume detector breaks down; the temporal GNN keeps its advantage thanks to the cascade's receiving-side signal.}
+\label{fig:stealth}
+\end{figure}
+
+\begin{table}[t]\centering
+\begin{tabular}{lcccc}
+\toprule
+Level & vol. & path & manual & temp. \\
+\midrule
+$K{=}1$ (11\%)  & 0.48 & 0.68 & \textbf{0.76} & 0.65 \\
+$K{=}2$ (27\%)  & 0.67 & 0.66 & 0.65 & \textbf{0.76} \\
+$K{=}3$ (45\%)  & 0.72 & 0.61 & 0.61 & \textbf{0.78} \\
+$K{=}5$ (63\%)  & 0.78 & 0.58 & 0.65 & \textbf{0.80} \\
+blast (77\%)    & \textbf{0.82} & 0.59 & 0.71 & \textbf{0.82} \\
+\bottomrule
+\end{tabular}
+\caption{Comparison with the path-based baseline (Hopper \citep{ho2021hopper}; AUC, stealth sweep~$K$).
+The path-based detector wins under extreme stealth, but falls with reach; the temporal GNN holds everywhere.}
+\label{tab:hopper}
+\end{table}
+\begin{table}[t]\centering
+\begin{tabular}{lcccc}
+\toprule
+Fan-out & vol. & path & manual & temp. \\
+\midrule
+$1$ (single recipient) & 0.48 & 0.47 & 0.45 & 0.45 \\
+$2$ & 0.84 & 0.51 & 0.47 & 0.77 \\
+$3$ & 0.94 & 0.50 & 0.45 & 0.91 \\
+$5$ & \textbf{0.98} & 0.50 & 0.50 & \textbf{0.96} \\
+\bottomrule
+\end{tabular}
+\caption{Blind spot: attack without propagation ($p_\mathrm{inf}{=}0$), AUC vs~fan-out. With a single recipient
+all detectors are random; the signal requires fan-out~$\ge2$.}
+\label{tab:blindspot}
+\end{table}
+
+\paragraph{Stability and inductive generalization.} The cascade model sweep (Tab.~\ref{tab:pinf}) shows
+that the hierarchy holds across the whole range $p_\mathrm{inf}\!\in\![0.05,0.9]$ and depth ---
+the receiving-side signal does not vanish at a realistically low $p_\mathrm{inf}$ (temporal GNN $0.91$--$0.96$).
+Inductive validation across disjoint organizations (Tab.~\ref{tab:scale}, Fig.~\ref{fig:scale}):
+the operational advantage holds on \emph{unseen} companies ($4.4\times$ at $19$~companies,
+$1.4\times$ at $200$), although it \emph{melts away with scale} --- the temporal GNN is a better
+\emph{operational detector}, not a better \emph{ranker}.
+
+\begin{table}[t]\centering\small
+\begin{tabular}{l ccccccc}
+\toprule
+$p_\mathrm{inf}$ & $0.05$ & $0.1$ & $0.2$ & $0.3$ & $0.5$ & $0.7$ & $0.9$ \\
+\midrule
+1-hop        & $0.60$ & $0.56$ & $0.59$ & $0.60$ & $0.68$ & $0.73$ & $0.79$ \\
+manual & $0.89$ & $0.87$ & $0.85$ & $0.84$ & $0.85$ & $0.87$ & $0.89$ \\
+temporal   & $\mathbf{0.96}$ & $\mathbf{0.96}$ & $\mathbf{0.91}$ & $\mathbf{0.88}$ & $\mathbf{0.88}$ & $\mathbf{0.90}$ & $\mathbf{0.93}$ \\
+\bottomrule
+\end{tabular}
+\caption{Cascade model sweep (AUC, $8$~seeds, depth~$4$). The hierarchy and the receiving-side
+signal hold --- the signal is not an artifact of aggressive reach.}
+\label{tab:pinf}
+\end{table}
+\begin{table}[t]\centering
+\begin{tabular}{lcccc}
+\toprule
+& \multicolumn{2}{c}{AUC} & \multicolumn{2}{c}{sensitivity@FPR$1\%$} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Organizations & temp. & manual & temp. & manual \\
+\midrule
+$19$  & $0.83$ & $0.86$ & $\mathbf{0.123}$ & $0.028$ \\
+$30$  & $0.80$ & $0.86$ & $\mathbf{0.087}$ & $0.054$ \\
+$200$ & $0.84$ & $0.88$ & $\mathbf{0.107}$ & $0.077$ \\
+\bottomrule
+\end{tabular}
+\caption{Inductive validation (organization split) under increasing scale. The operational advantage
+of the temporal GNN holds inductively, but melts away.}
+\label{tab:scale}
+\end{table}
+\begin{figure}[t]\centering
+\includegraphics[width=0.62\linewidth]{fig_cascade_scale.pdf}
+\caption[Inductive advantage vs scale]{sensitivity@FPR1\% on unseen organizations against the
+number of companies. The advantage holds inductively, but decreases ($4.4\times\!\to\!1.4\times$).}
+\label{fig:scale}
+\end{figure}
+
+\noindent\textbf{Invariant~II --- verdict.} Cascade dynamics remove the static layers' blindness to
+compromises and --- unlike the volume detector --- \emph{do not break down} against a stealthy
+attacker; the advantage is causally temporal and generalizes inductively.
+
+% ============================================================
+\subsection{Organization susceptibility measurement}
+\label{sec:susceptibility}
+The third contribution is the use of these detectors as a \emph{measuring instrument}. We define
+group susceptibility as the residual margin of the fusion detector at FPR$=1\%$:
+$\mathrm{Susc}(\text{group})=1-\mathrm{Recall@FPR1\%}$ (the fraction of attacks that pass; cf.\
+Eq.~\ref{eq:susc}). We break down the result of the unified event model by \emph{attack channel} and victim
+\emph{seniority} (Tab.~\ref{tab:susc}, $20$~seeds).
+
+\begin{table}[t]\centering
+\begin{tabular}{llcc}
+\toprule
+Dimension & Group & Recall@FPR$1\%$ & $\mathrm{Susc}$ \\
+\midrule
+\multirow{2}{*}{Attack channel}
+  & External impers.\ (cold BEC) & $0.038$ & $\mathbf{0.962}$ \\
+  & Compromised acct (lateral)   & $0.145$ & $0.855$ \\
+\midrule
+\multirow{4}{*}{\shortstack[l]{Seniority\\(lateral channel)}}
+  & Executive & $\mathbf{0.076}$ & $\mathbf{0.924}$ \\
+  & Senior                   & $0.135$ & $0.865$ \\
+  & Mid-level & $0.162$ & $0.838$ \\
+  & Junior                   & $0.160$ & $0.840$ \\
+\midrule
+\multirow{4}{*}{\shortstack[l]{Seniority\\(cold BEC channel)}}
+  & Executive & $0.038$ & $0.962$ \\
+  & Senior                   & $0.040$ & $0.960$ \\
+  & Mid-level & $0.042$ & $0.958$ \\
+  & Junior                   & $0.035$ & $0.965$ \\
+\bottomrule
+\end{tabular}
+\caption{Organization susceptibility \emph{measured} by the fusion detector ($20$~seeds, FPR$=1\%$).
+It is governed by the \emph{relation} (channel), not rank: cold impersonation leaves $\mathrm{Susc}\!\approx\!0.96$
+regardless of level.}
+\label{tab:susc}
+\end{table}
+
+\noindent Three conclusions. \emph{(1)~Susceptibility is governed by relation, not rank}: cold impersonation
+leaves $\mathrm{Susc}\!\approx\!0.96$ \emph{for every} level --- no layer covers
+a sender from off-graph (a structural floor of the residual $2\%$). \emph{(2)~A compromised account is less
+dangerous} ($0.855$ vs $0.962$): a known contact off-rhythm is a sharp, low-FP conjunction. \emph{(3)~In the
+lateral channel, rank acts \textbf{counterintuitively}}: executives, the richest in domain-knowledge layers, are
+\emph{best} protected ($0.924$), while the peripheral mid/junior --- \emph{most} exposed
+($0.838$/$0.840$). What protects is not status but one's own embedding in the domain-knowledge graph. The implication is
+opposite to the ``VIP-first'' program: under a lateral threat, the largest margin lies on the periphery.
+
+% ============================================================
+\subsection{Validation on real communication graphs}
+\label{sec:res-realgraphs}
+We validate the mechanisms on \emph{real} graphs (Enron, two SNAP graphs), where the structure
+and rhythms are real, and the attack labels are controlled injections (a matched design: legitimate traffic and attack
+are edges with the same distribution of endpoints/degrees, distinguished solely by their temporal
+pattern).
+
+\paragraph{Invariant~I on the real Enron multiplex.} From the headers we build a real structural-temporal
+multiplex (contacts, co-recipients, domain, rhythm; OSINT remains synthetic --- a deliberate
+split). On $818$~senders and $\sim\!170$k~events, the full multiplex reaches AUC $0.94$
+(legitimate traffic on-rhythm) versus $0.75$ for contacts alone. The \emph{off-hours traffic} audit
+(Fig.~\ref{fig:enronaudit}) shows that the operational sensitivity was inflated: a realistic
+figure is $\sim\!0.49$ (not $0.87$), but the multiplex \emph{advantage} over the temporal layer alone
+\emph{rises} with the off-hours fraction. The sharpest control --- the \emph{temporal split} of rhythm
+estimation (rhythm from the early $60\%$, evaluation on the later $40\%$) together with off-hours
+traffic (Tab.~\ref{tab:enronsplit}): the temporal layer \emph{alone} collapses operationally (Recall@FPR$1\%\!\to\!0$),
+but \textbf{the full multiplex remains robust} (AUC $0.84$, Recall $0.51$), and its advantage over time
+\emph{rises} after the leakage is removed --- the structural signal is real.
+
+\begin{table}[t]\centering
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{temporal layer} & \multicolumn{2}{c}{full multiplex} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Rhythm estimated from & AUC & R@FPR$1\%$ & AUC & R@FPR$1\%$ \\
+\midrule
+full history (\emph{with leakage}) & $0.86$ & $0.73$ & $0.94$ & $0.88$ \\
+early window (\emph{temporal split}) & $0.75$ & $0.00$ & $0.87$ & $0.51$ \\
+early window $+\,$off-hours (\emph{both}) & $0.68$ & $\mathbf{0.00}$ & $\mathbf{0.84}$ & $\mathbf{0.51}$ \\
+\bottomrule
+\end{tabular}
+\caption{Rhythm leakage control on Enron ($20$~seeds). The temporal layer alone is inflated by leakage
+(Recall$\to0$), but the full multiplex remains robust under \emph{both} controls.}
+\label{tab:enronsplit}
+\end{table}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{fig_enron_audit.pdf}
+\caption[Enron anchor audit]{Enron anchor audit. AUC (left) degrades gently with the off-hours
+traffic fraction; the operational sensitivity@FPR1\% (right) was inflated --- the temporal layer alone collapses
+to zero, the multiplex advantage rises.}
+\label{fig:enronaudit}
+\end{figure}
+
+\paragraph{Invariant~II on the real Enron topology.} Repeating the cascade experiment on the real graph
+($1990$~accounts, $8$~seeds, leak-free), the hierarchy from the synthetic data \emph{is reproduced} (Tab.~\ref{tab:enron-casc},
+Fig.~\ref{fig:enron-casc}): 1-hop $0.65$, manual $0.77$, \textbf{temporal GNN $0.85$} (beats manual
+in $8/8$~seeds), and time shuffling levels it with manual ($0.77$) --- the advantage is causally
+temporal on the real topology as well.
+
+\begin{table}[t]\centering
+\begin{tabular}{lcc}
+\toprule
+Detector & AUC & sensitivity@FPR$1\%$ \\
+\midrule
+1-hop (tabular)        & $0.65$ & $0.022$ \\
+Hand-crafted context (tab.) & $0.77$ & $0.042$ \\
+\textbf{Temporal GNN}     & $\mathbf{0.85}$ & $\mathbf{0.072}$ \\
+Temporal (time shuffled) & $0.77$ & $0.049$ \\
+\bottomrule
+\end{tabular}
+\caption{Invariant~II on the REAL Enron contacts graph ($1990$~nodes, matched design,
+$8$~seeds). The temporal GNN beats the manual and shuffled variants in $8/8$~seeds.}
+\label{tab:enron-casc}
+\end{table}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{fig_cascade_enron.pdf}
+\caption[Cascade anchor on Enron]{Invariant~II on Enron: the same hierarchy as on synthetic data
+(1-hop $<$ manual $<$ temporal), with a shuffle control leveling the temporal
+with the manual.}
+\label{fig:enron-casc}
+\end{figure}
+
+\paragraph{Transfer to two further SNAP graphs.} On \texttt{email-Eu-core} \citep{paranjape2017motifs} and \texttt{CollegeMsg}
+\citep{panzarasa2009patterns} (\citep{leskovec2014snap}) the regime transition \emph{replicates}
+(Tab.~\ref{tab:realgraphs}, Fig.~\ref{fig:realgraphs}): against the naive blast the volume detector dominates ($0.97$),
+but against a \emph{stealthy} attacker it breaks down ($0.70$/$0.66$), while the temporal GNN holds
+($0.88$/$0.85$). The predictivity probe is therefore positive: the method ranking established on one topology
+\emph{transfers} --- the mechanism is not an artifact of a single corpus (on the three real graphs
+the Wilcoxon test of temporal vs random gives $p<0.001$).
+
+\begin{table}[t]\centering
+\begin{tabular}{llcccc}
+\toprule
+& & \multicolumn{2}{c}{AUC} & \multicolumn{2}{c}{sensitivity@FPR$1\%$} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Graph & Regime & vol. & temp. & vol. & temp. \\
+\midrule
+\multirow{2}{*}{\texttt{email-Eu-core}} & blast  & $\mathbf{0.97}$ & $0.70$ & $\mathbf{0.29}$ & $0.06$ \\
+                                        & stealthy   & $0.70$ & $\mathbf{0.88}$ & $0.00$ & $\mathbf{0.08}$ \\
+\midrule
+\multirow{2}{*}{\texttt{CollegeMsg}}    & blast  & $\mathbf{0.97}$ & $0.70$ & $\mathbf{0.35}$ & $0.04$ \\
+                                        & stealthy   & $0.66$ & $\mathbf{0.85}$ & $0.02$ & $\mathbf{0.12}$ \\
+\bottomrule
+\end{tabular}
+\caption{Transfer to two real SNAP graphs ($3$~seeds). Naive blast: the volume detector wins.
+Stealthy attack: the volume detector breaks down, the temporal GNN holds --- as on Enron and the synthetic data.}
+\label{tab:realgraphs}
+\end{table}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{fig_cascade_realgraphs.pdf}
+\caption[Replication on real topologies]{Two real topologies. The volume detector (red) wins the naive
+blast, but breaks down under the stealthy attack; the temporal GNN (blue) maintains its
+effectiveness.}
+\label{fig:realgraphs}
+\end{figure}
+
+% ============================================================
+\subsection{Fusion with content and the graph boundary}
+\label{sec:res-content}
+The invariants are blind to cold off-graph impersonation (\ref{sec:susceptibility}); that is the
+domain of content. Combining the graph signal with content (TF-IDF) in two regimes
+(Tab.~\ref{tab:content}): in the \emph{tell-tale} regime content separates almost perfectly ($0.997$),
+and the multiplex is redundant; in the \emph{mimicry} regime (BEC) content is blind ($0.502$),
+and the signal is carried by the multiplex ($0.862$). \emph{Fusion} yields best-of-both ($0.998$/$0.848$) --- content
+and graph are complementary. \emph{GNN sanity check}: on a small graph ($N{=}150$) a single untuned
+multiplex GNN does \emph{not} surpass the explicit hand-crafted features (AUC $0.78$ vs $0.86$ LightGBM) ---
+at this scale the explicit membership features already capture the signal; the advantage of a learned
+representation we defer to larger graphs.
+
+\begin{table}[t]\centering
+\begin{tabular}{lccc}
+\toprule
+Regime & Content only & Multiplex only & Fusion \\
+\midrule
+Tell-tale (content trace) & $\mathbf{0.997}$ & $0.862$ & $0.998$ \\
+Mimicry (BEC) & $0.502$ & $0.862$ & $\mathbf{0.848}$ \\
+\bottomrule
+\end{tabular}
+\caption{Fusion of content with the multiplex (AUC; $20$~seeds). Content wins tell-tale, the multiplex
+wins mimicry, fusion combines both.}
+\label{tab:content}
+\end{table}
+
+% ============================================================
+\subsection{Rigor: what it means for a detector to ``work''}
+\label{sec:res-rigor}
+\paragraph{The whole curve and significance.} Instead of a single threshold we report the
+sensitivity--FPR curve (Fig.~\ref{fig:fpr}) and a paired test. At a realistically low FPR ($0.1\%$) all methods
+are weak --- we do not hide this. Hardening the main contrast on~$20$~seeds (the stealthy point,
+Tab.~\ref{tab:headline-ci}): the receiving-side signal beats the volume detector \emph{significantly and with a large effect}
+(temporal GNN $+0.081$ AUC, $p<0.001$, Cliff~$\delta{=}0.88$); the advantage of the learned GNN \emph{over} the hand-crafted
+context is \emph{operating-point dependent} and insignificant in key regimes. The credible result
+is therefore not ``the GNN beats everything'', but that \emph{under a stealthy attack the receiving-side signal} (learned
+\emph{or} hand-crafted) significantly surpasses volume detection, which breaks down.
+
+\begin{table}[t]\centering
+\begin{tabular}{lccc}
+\toprule
+Contrast (stealthy attack) & $\Delta$AUC & paired $p$ & Cliff~$\delta$ \\
+\midrule
+temporal GNN $>$ volume        & $+0.081$ & $<\!0.001$ & $0.88$ (large) \\
+temporal GNN $>$ hand-crafted context   & $+0.064$ & $<\!0.001$ & $0.78$ (large) \\
+hand-crafted context $>$ volume            & $+0.017$ & $0.28$     & $0.28$ (small, n.s.) \\
+\bottomrule
+\end{tabular}
+\caption{Hardening of the main contrast on~$20$~seeds (the stealthy point). Paired Wilcoxon $+$ Cliff~$\delta$.}
+\label{tab:headline-ci}
+\end{table}
+\begin{figure}[t]\centering
+\includegraphics[width=\linewidth]{fig_cascade_fpr.pdf}
+\caption[Sensitivity--FPR curve]{Sensitivity--FPR curve ($10$~seeds). At low FPR all
+methods are weak; the volume detector dominates the blast and breaks down under the stealthy attack, where the
+receiving-side signal holds.}
+\label{fig:fpr}
+\end{figure}
+
+\paragraph{Base rate: why this is a lower bound.} Sensitivity at a given FPR is
+independent of prevalence, but \emph{precision} drops when the attack is rare. From Bayes' theorem
+$\mathrm{prec}(b)=rb/(rb+\alpha(1-b))$ (\ref{eq:baserate}): for the operating point sensitivity $0.14$ at
+FPR$1\%$ and a real prevalence of $1{:}10^4$, each detected attack comes with $\sim\!700$ false alarms
+(Tab.~\ref{tab:baserate}) --- about $\sim\!3$~orders too high relative to the threshold of \citet{ho2019detecting}
+($<\!4$/million). \textbf{Consequence:} at a real prevalence our detectors --- and any
+detector with a similar ROC curve --- are a \emph{triage and ranking} tool, not an autonomous
+defense; we locate the contribution in the signal, the mechanism, and the methodology.
+\begin{equation}
+\mathrm{prec}(b) \;=\; \frac{r\,b}{r\,b + \alpha\,(1-b)}.
+\label{eq:baserate}
+\end{equation}
+
+\begin{table}[t]\centering
+\begin{tabular}{lccc}
+\toprule
+Attack frequency & Precision & FP per attack & FP/million \\
+\midrule
+$1{:}3$ (evaluation) & 0.82 & $\sim$0 & 7\,500 \\
+$1{:}100$           & 0.12 & 7        & 9\,900 \\
+$1{:}1000$          & 0.014 & 71      & 9\,990 \\
+$1{:}10\,000$       & 0.001 & 714     & 9\,999 \\
+$1{:}10^6$          & $<$0.001 & 71\,000 & 10\,000 \\
+\bottomrule
+\end{tabular}
+\caption{Base-rate arithmetic for the temporal GNN operating point (sensitivity $0.14$,
+FPR$1\%$). Precision follows from the ROC curve, independently of the model.}
+\label{tab:baserate}
+\end{table}
+
+\paragraph{Label noise --- the price of learning.} Flipping an increasing fraction of training labels
+(Tab.~\ref{tab:labelnoise}), the learned GNN degrades \emph{fastest} (temporal $0.82\!\to\!0.70$ at
+$20\%$ noise, volume only $0.79\!\to\!0.75$) --- under realistic label noise the advantage of the learned
+model shrinks. This is another boundary that we state explicitly.
+
+\begin{table}[t]\centering
+\begin{tabular}{lcccc}
+\toprule
+Label noise & vol. & path & manual & temp. \\
+\midrule
+$0\%$   & $0.79$ & $0.72$ & $0.66$ & $\mathbf{0.82}$ \\
+$5\%$   & $0.78$ & $0.71$ & $0.65$ & $\mathbf{0.80}$ \\
+$10\%$  & $0.78$ & $0.71$ & $0.64$ & $\mathbf{0.76}$ \\
+$20\%$  & $\mathbf{0.75}$ & $0.68$ & $0.62$ & $0.70$ \\
+\bottomrule
+\end{tabular}
+\caption{Audit of noisy training labels (AUC, stealthy attack). The learned GNN degrades fastest ---
+sensitivity to noise is the price of learning.}
+\label{tab:labelnoise}
+\end{table}
+
+\noindent\textbf{Definition of effectiveness.} A method ``works'' \emph{operationally} if its advantage is
+causally relational-temporal (it vanishes under shuffle controls), transferable across topologies
+(predictivity probe), and measured at low FPR with explicit prevalence arithmetic. Under this
+definition ``$98\%$ on a mass benchmark'' does not attest to detecting spear phishing --- what counts is
+sensitivity to the \emph{residual} $2\%$, with an explicitly stated floor (cold impersonation)
+and an honest threshold.

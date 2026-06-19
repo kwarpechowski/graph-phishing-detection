@@ -1,0 +1,70 @@
+% ============================================================
+% Introduction — synthesis of P1-P3 (target: Computers & Security)
+% ============================================================
+\section{Introduction}
+\label{sec:intro}
+
+Phishing detection is often presented as an almost solved problem. Modern email
+filters, built on the \emph{content} signal (lexical features, URLs, attachments) and reputation,
+achieve very high effectiveness on mass campaigns --- on the order of $\sim$98\%
+correct classifications on typical benchmarks \citep{birthriya2025detection,tan2020graph}. This number
+is, however, misleading. The remaining fraction of traffic --- \textbf{spear phishing} and \textbf{Business Email
+Compromise (BEC)} --- accounts for a disproportionately large share of financial losses
+\citep{cidon2019high,ho2019detecting}, while at the same time being almost undetectable by content-based methods.
+\emph{It is precisely these ``$2\%$'' that are the real problem.}
+
+\paragraph{Why the residual $2\%$ gets through.} We argue that this is neither accidental nor a
+transient gap, but a \emph{structural} property of the targeted attack. Spear phishing succeeds
+\textbf{precisely because} it \emph{respects the domain knowledge} of the victim: their roles
+and hierarchy, business relationships, competencies, communication routines, and project context. A request
+from the ``CEO'' to the CFO for an urgent transfer is \emph{content-wise} indistinguishable from
+a legitimate one --- it is \emph{plausible} in light of knowledge about the organization \citep{butavicius2022why,sturman2025security}.
+The attacker builds this knowledge from OSINT \citep{dewan2014analyzing,brown2025web}, and language
+models drastically reduce its cost \citep{bethany2024evaluating}. Since maliciousness is determined not by
+\emph{what} is written, but by \emph{who} sent it and \emph{in what context}, the
+detection signal must lie \emph{beyond} the content --- in the structure of relationships and in the dynamics of their violation.
+
+\paragraph{Thesis: spear phishing is a violation of domain knowledge.} We formalize the \emph{domain knowledge graph}
+of an organization as a multiplex network of relations over a set of accounts (contacts, collaboration, competencies,
+OSINT traces, temporal rhythm). In this framing, the targeted attack reveals itself through two invariants,
+invisible to a content filter:
+\begin{itemize}[noitemsep,topsep=2pt]
+  \item \textbf{cross-layer (in)consistency}: a genuine relation is consistent across many
+  layers at once; impersonation (external or a compromised account) breaks this pattern --- the sender
+  is ``known'' in one layer, but inconsistent in another (e.g.\ off-rhythm or without an OSINT trace);
+  \item \textbf{propagation dynamics}: lateral phishing is a \emph{cascade process} on the graph --- a compromised
+  account sends to its contacts off its own rhythm, creating a wave-like signature
+  \emph{on the receiving side}, which a single message does not reveal.
+\end{itemize}
+The framing covers \emph{uniformly} both modes of the targeted attack: \textbf{lateral/BEC} (compromised
+internal account, known contact) and \textbf{external impersonation} of a role or authority.
+
+\paragraph{Measurement rigor: what it means for a method to ``work''.} This work places particular emphasis on
+\emph{research methodology}. We show that the results of graph-based detectors are easy to
+\emph{inflate}: real-world anchors introduce \emph{leaks} (of rhythm, degree, community alignment
+with labels), and synthetic generators favor certain classes of models. Following
+the caution of \citet{arp2022dos} and the TESSERACT protocol \citep{pendlebury2019tesseract},
+we introduce a \emph{leak-aware} evaluation and a \emph{predictivity probe}
+measuring whether the ranking of methods transfers across topologies. By this same
+measure we \emph{define the notion of effectiveness} of a method for residual spear phishing.
+Throughout, the learning models we employ --- a temporal graph network and gradient boosting ---
+serve as \emph{off-the-shelf measurement instruments} that quantify the two invariants; the
+contribution of this work is conceptual and methodological --- a way of \emph{framing and measuring}
+targeted attacks --- not a new machine-learning architecture.
+
+\paragraph{Contributions.}
+\begin{enumerate}[noitemsep,topsep=2pt]
+  \item \textbf{The notion and formalization of the domain knowledge graph} and the thesis that spear phishing is its
+  violation --- uniformly for lateral/BEC and external impersonation (Section~\ref{sec:method}).
+  \item \textbf{Two detection invariants} (cross-layer inconsistency, cascade dynamics)
+  beating strong baselines under a content-evasion regime --- with causal controls.
+  \item \textbf{An organizational susceptibility metric}: a measurement of which roles, relations, and communication patterns are
+  most exposed to spear phishing (Section~\ref{sec:susceptibility}).
+  \item \textbf{A leak-aware evaluation methodology} and an \emph{operational} definition of spear phishing detection
+  effectiveness, together with an honest delineation of the limits (FPR, base rate, adversarial cost).
+\end{enumerate}
+
+\paragraph{Organization.} Section~\ref{sec:related} discusses spear phishing, human susceptibility, graph-based
+approaches, and evaluation methodology. Section~\ref{sec:method} formalizes the domain knowledge graph, the threat model,
+and the evaluation protocol. The subsequent sections present the detection results, the susceptibility measurement, and a discussion
+of the limits and practical implications.

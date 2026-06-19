@@ -1,0 +1,50 @@
+# Logs (anywhere)
+*.log
+
+# Third-party reference PDFs are NOT redistributed (other authors' copyright; see LICENSE).
+# The reading notes (reference.md / summary.md) are kept; only the PDFs are excluded.
+references/**/*.pdf
+references/downloaded/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Generated/computed artifacts ARE versioned: code/data/twins/ (synthetic personas)
+# and code/results/ (computed CSVs / layers / OSINT overlays).
+# Only large PUBLIC datasets (downloaded) and temp caches are excluded — see code/README.md.
+code/data/elliptic/
+code/data/realgraphs/
+code/data/topo_tmp/
+code/data/enron/
+code/data/*.zip
+code/data/*.tar*
+
+# Experiment outputs: result CSVs are kept (figures are reproducible from them);
+# only PNG previews are ignored.
+*.png
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.synctex.gz
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.spl
+# keep the compiled PDF out of source control by default:
+paper/*.pdf
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/

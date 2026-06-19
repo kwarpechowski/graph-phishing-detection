@@ -1,0 +1,31 @@
+{
+  "title": "Spear Phishing as a Violation of the Domain Knowledge Graph — reproducibility package",
+  "upload_type": "software",
+  "description": "<p>Reproducibility package for the paper <em>\"Spear Phishing as a Violation of the Domain Knowledge Graph: Cascade Dynamics and Leak-Aware Evaluation\"</em> (Warpechowski &amp; Ksi&#281;&#380;opolski).</p><p>Modern email filters catch mass phishing (~98%), but the residual spear phishing and Business Email Compromise (BEC) slip through precisely because they respect the victim's <strong>domain knowledge</strong>. We model that knowledge as a <strong>multiplex graph</strong>. The empirically strongest signal is <strong>temporal cascade dynamics</strong> &mdash; a receiving-side wave that survives stealthy attacks and replicates on three real graphs &mdash; while <strong>cross-layer inconsistency</strong> is shown synthetically as a proof of soundness. We also measure <strong>organizational susceptibility</strong> and define detection effectiveness under a <strong>leak-aware</strong> protocol.</p><p>This archive contains: the LaTeX manuscript and figures (<code>paper/</code>), the experiment and analysis code (<code>code/</code>), the generated synthetic population of 150 personas (<code>code/data/twins/</code>), and all computed experiment outputs (<code>code/results/</code>) from which the tables and figures reproduce. The large public input datasets (Enron maildir, SNAP graphs) are not redistributed; download pointers are in <code>code/README.md</code>. Third-party reference PDFs are intentionally excluded for copyright reasons.</p>",
+  "license": "MIT",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Warpechowski, Kamil",
+      "affiliation": "Kozminski University; NASK National Research Institute, Warsaw, Poland"
+    },
+    {
+      "name": "Księżopolski, Bogdan",
+      "affiliation": "Kozminski University, Warsaw, Poland"
+    }
+  ],
+  "keywords": [
+    "spear phishing",
+    "Business Email Compromise",
+    "domain knowledge graph",
+    "multiplex network",
+    "cross-layer inconsistency",
+    "temporal cascade dynamics",
+    "lateral phishing",
+    "organizational susceptibility",
+    "leak-aware evaluation",
+    "graph neural networks"
+  ],
+  "language": "eng",
+  "version": "1.0.0"
+}

@@ -1,0 +1,50 @@
+% ============================================================
+% Conclusions (target: Computers & Security)
+% ============================================================
+\section{Conclusions}
+\label{sec:conclusion}
+
+Modern phishing detection is effective in aggregate, yet a residual fraction --- spear phishing
+and~BEC --- remains the most costly and~almost invisible to content filters. We have shown that
+this is not an accident but a structural property: a targeted attack succeeds \emph{precisely
+because} it respects the victim's domain knowledge, and~therefore the maliciousness signal lies
+not in the content but in the \emph{inconsistency} with the graph of that knowledge and~in the \emph{dynamics} of its violation.
+
+\paragraph{Answers to the research questions.}
+\begin{description}[noitemsep,topsep=2pt]
+  \item[Does the domain knowledge graph detect attacks invisible to content?] \emph{Yes, conditionally.} The cross-layer
+  inconsistency invariant beats a single contact graph and~eliminates false alarms from
+  legitimate new senders (Section~\ref{sec:res-inv1}), provided there is a shared, observable domain-knowledge
+  edge.
+  \item[Does cascade dynamics detect a compromised account?] \emph{Yes.} The temporal invariant removes the blindness
+  of static layers and~--- unlike a volume-based detector --- \emph{does not collapse} against a stealthy
+  attacker (Section~\ref{sec:res-inv2}); the advantage is causally temporal.
+  \item[What is the organizational susceptibility?] \emph{Measurable.} It is governed by the \emph{relation}, not
+  rank: cold external impersonation leaves a margin of $\mathrm{Susc}\!\approx\!0.96$ at every
+  level, whereas in the lateral channel it is the \emph{periphery} of the organization that is most exposed, not
+  the executives (Section~\ref{sec:susceptibility}).
+  \item[What does it mean for the method to ``work''?] We define effectiveness operationally and~conditionally ---
+  through sensitivity at a fixed FPR under leak controls and~a predictiveness probe ---
+  with an explicitly stated floor (cold impersonation) and~an honest threshold (Section~\ref{sec:res-rigor}).
+\end{description}
+
+\paragraph{Contributions.}
+\begin{enumerate}[noitemsep,topsep=2pt]
+  \item \textbf{The concept and~formalization of the domain knowledge graph} together with the thesis that spear phishing is its
+  violation --- uniformly for lateral/BEC and~external impersonation.
+  \item \textbf{Two complementary detection invariants} (cross-layer inconsistency
+  and~cascade dynamics), with causal controls and~validation on three real communication graphs.
+  \item \textbf{A measured organizational susceptibility metric} revealing that the residual margin
+  is governed by the relation, and~that in the lateral channel the periphery is more exposed than the top.
+  \item \textbf{A leak-aware evaluation methodology} and~an operational definition of spear phishing detection
+  effectiveness.
+\end{enumerate}
+
+\paragraph{Limitations (summary).} The maliciousness is synthetic (we validate the mechanism, not
+the detection of real intrusions); the susceptibility measurement inherits the assumptions of the event model; scale
+and~the operational threshold remain limitations --- details in Section~\ref{sec:discussion}.
+
+The contribution is not a finished product but \emph{a concept, a method, and~measurement rigor}. Spear phishing is
+a violation of domain knowledge; the graph of that knowledge makes it --- and~the susceptibility to it --- \emph{measurable}.
+This opens the way to a defense that does not merely ask ``does this message look
+malicious'', but ``is it consistent with what the organization knows about itself''.

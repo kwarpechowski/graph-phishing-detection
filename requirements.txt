@@ -1,0 +1,13 @@
+# Python >= 3.10. Core experiment dependencies.
+numpy
+scipy
+pandas
+scikit-learn
+lightgbm
+matplotlib
+networkx
+
+# Graph neural-network detectors (Invariant II: temporal cascade dynamics).
+# Install a torch build matching your platform/CUDA from https://pytorch.org first if needed.
+torch
+torch-geometric
