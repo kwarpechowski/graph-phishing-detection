@@ -1,0 +1,211 @@
+% ============================================================
+% Model — dry formalism (target: Computers & Security)
+% Variables only, NO concrete numbers. Everything defined here is
+% instantiated later in Case Study (Sec.~\ref{sec:results}).
+% ============================================================
+\section{Model}
+\label{sec:model}
+
+This section states the formal model on which the rest of the paper rests: the
+\emph{domain knowledge graph}, a threat model that unifies lateral and external
+attacks, the two detection invariants, an organizational susceptibility measure,
+and an operational definition of detection effectiveness. We keep it deliberately
+\emph{dry} --- symbols and relations only, no concrete values. Every quantity
+introduced here is a variable; the numbers that instantiate it (population size,
+number of layers, time resolution, weights) are deferred to the Case Study
+(Sec.~\ref{sec:results}), so that the model reads as a specification and the
+Case Study as one realization of it. Table~\ref{tab:notation} collects all symbols
+for quick reference. Figure~\ref{fig:model} maps the whole model from the general to the detailed: an
+organization induces a multiplex domain knowledge graph, whose two invariants feed two detectors, which are
+judged by one definition of effectiveness and read off as susceptibility.
+
+\begin{figure}[t]\centering
+\resizebox{0.98\columnwidth}{!}{%
+\begin{tikzpicture}[>=Latex, font=\small, node distance=6mm,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=8mm, inner sep=3pt, fill=blue!4},
+  lay/.style={draw, align=center, minimum width=20mm, minimum height=6mm, inner sep=2pt, fill=blue!8},
+  det/.style={box, fill=red!5}, flow/.style={-{Latex[length=2mm]}, thick}]
+  % Level 1: organization
+  \node[box] (org) {Organization\\{\scriptsize accounts $V$, roles, routines}};
+  % Level 2: domain knowledge graph (stack of layers)
+  \node[lay, right=14mm of org, yshift=6mm] (l1) {structural\\{\scriptsize contacts, hierarchy, domain}};
+  \node[lay, below=2mm of l1] (l2) {OSINT\\{\scriptsize \texttt{c3}--\texttt{c8}}};
+  \node[lay, below=2mm of l2] (l3) {temporal\\{\scriptsize rhythm $\tau$}};
+  \begin{scope}[on background layer]
+    \node[draw, dashed, rounded corners, fit=(l1)(l2)(l3), inner sep=4pt, label=above:{\footnotesize domain knowledge graph $\mathcal{G}$ (Def.~\ref{def:dkg})}] (dkg) {};
+  \end{scope}
+  % Level 3: invariants
+  \node[box, right=16mm of l1] (i1) {Invariant~I\\{\scriptsize cross-layer\\inconsistency $C(s,v)$}};
+  \node[box, right=16mm of l3] (i2) {Invariant~II\\{\scriptsize cascade\\dynamics $m_v^{(b)}$}};
+  % Level 4: detectors
+  \node[det, right=14mm of i1] (d1) {static detector};
+  \node[det, right=14mm of i2] (d2) {temporal detector};
+  % Level 5: outputs
+  \node[box, right=12mm of d1, yshift=-8mm, fill=green!6] (eff) {Effectiveness\\{\scriptsize leak-aware, low-FPR\\(Sec.~\ref{sec:effectiveness})}};
+  \node[box, below=10mm of eff, fill=green!6] (susc) {Susceptibility\\{\scriptsize $\mathrm{Susc}(v)$ (Def.~\ref{def:susc})}};
+  % flows
+  \draw[flow] (org) -- (dkg);
+  \draw[flow] (l1.east) -- (i1.west);
+  \draw[flow] (l3.east) -- (i2.west);
+  \draw[flow] (i1) -- (d1);
+  \draw[flow] (i2) -- (d2);
+  \draw[flow] (d1.east) -- (eff.west);
+  \draw[flow] (d2.east) -- (susc.west);
+\end{tikzpicture}}
+\caption[General model]{The model, general to detailed (left to right). An organization induces the multiplex
+domain knowledge graph $\mathcal{G}$; its two violation invariants (cross-layer, temporal) drive two detectors,
+which are judged by one \emph{definition of effectiveness} and summarized as per-node \emph{susceptibility}.
+Each block is defined in the subsection named on it.}
+\label{fig:model}
+\end{figure}
+
+\begin{table}[t]\centering\small
+\caption{Notation used throughout the paper. Concrete instantiations of the free
+parameters ($N$, $|\mathcal{L}|$, $T$, $w_L$, $p_\mathrm{inf}$, $H$) are given in
+the Case Study (Sec.~\ref{sec:results}).}
+\label{tab:notation}
+\begin{tabular}{ll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$\mathcal{G}$ & domain knowledge graph (multiplex) \\
+$V$ & set of accounts (people/roles), $|V|=N$ \\
+$\mathcal{L}$ & set of relation layers over the same $V$ \\
+$E_L$ & edge set of layer $L\in\mathcal{L}$ \\
+$w_L\in(0,1]$ & confidence weight of layer $L$ \\
+$\tau(s)$ & temporal rhythm (active windows) of sender $s$ \\
+$T$ & number of time buckets partitioning the period \\
+$b$ & a single time bucket, $b\in\{1,\dots,T\}$ \\
+$C(s,v)$ & domain-knowledge coverage of pair $(s,v)$, Eq.~\eqref{eq:consistency-model} \\
+$tc(s,v,t)$ & temporal consistency of $(s,v)$ at time $t$ \\
+$s,v$ & sender, victim (recipient) \\
+$\mathcal{A}(v)$ & set of plausible impersonating senders of $v$ \\
+$\mathrm{Susc}(v)$ & susceptibility of node $v$, Eq.~\eqref{eq:susc-model} \\
+$G=(V,E)$ & contacts layer used for cascade dynamics \\
+$p_\mathrm{inf}$ & per-contact infection probability of a cascade \\
+$H$ & maximum cascade depth (hops) \\
+$m_v^{(b)}$ & temporal-GNN memory of node $v$ after bucket $b$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Domain knowledge graph}
+\label{sec:dkg}
+An organization's domain knowledge --- who knows whom, who is responsible for what,
+which competencies, routines, and public footprints they have --- is \emph{relational}.
+We therefore model it as a multiplex network: one set of accounts, many types of
+relation stacked over it. This subsection defines that object and the two derived
+quantities every later result is built on.
+
+\smallskip\noindent\emph{Intuition before the formalism.} Read the definition below as a stack of same-sized
+graphs over one shared set of people: each graph records one \emph{kind} of fact (who emails whom, who shares a
+skill, who is active when). A real relationship shows up on many of these graphs at once; a forged or hijacked
+one shows up on some but contradicts others. Everything that follows --- both detectors and the susceptibility
+measure --- is just a way of reading that agreement or disagreement across the stack, which is why we first pin
+down the stack ($\mathcal{G}$) and two numbers that summarize a single sender--victim pair ($C$ and $tc$).
+
+\begin{definition}[Domain knowledge graph]
+\label{def:dkg}
+A domain knowledge graph is $\mathcal{G}=(V,\{E_L\}_{L\in\mathcal{L}},\{w_L\},\tau)$, where $V$ is the set of
+accounts (people/roles), $\mathcal{L}$ is the set of relation \emph{layers} over the \emph{same} $V$ (contacts,
+hierarchy, collaboration, shared competencies/conferences/certificates, platforms, routines --- OSINT
+footprints from the persona fields \texttt{c3}--\texttt{c8}, defined in Sec.~\ref{sec:results}), $w_L\in(0,1]$ is the confidence weight of a layer, and
+$\tau:V\!\times\!V\!\to\!\mathcal{T}$ assigns to edges a \emph{temporal rhythm} (the sender's active windows).
+Each layer encodes \emph{one type} of domain fact; superimposed, they form the entire knowledge of ``what is
+normal''.
+\end{definition}
+
+\noindent\emph{Why this object.} The key property we exploit is the \emph{complementarity} of layers: a genuine
+relation is consistent across many of them at once (a known contact, in their own rhythm, with a real
+collaboration footprint), whereas a fabricated fact or a compromise breaks this consistency. This motivates two
+scalar summaries of a sender--victim pair. The \emph{domain-knowledge coverage} weights the layers in which the
+pair co-occurs,
+\begin{equation}
+C(s,v)\;=\;\sum_{L\in\mathcal{L}} w_L\,\mathbf{1}\!\left[(s,v)\in E_L\right],
+\label{eq:consistency-model}
+\end{equation}
+and the \emph{temporal consistency} tests whether the message arrives in the sender's rhythm,
+$tc(s,v,t)=\mathbf{1}[t\in\tau(s)]$. High $C$ with $tc=0$ is the canonical signature of a compromise; the two
+detection invariants below make this precise.
+
+\subsection{Threat model: unifying lateral and external}
+\label{sec:threat}
+Before the invariants, we fix what the attacker is trying to do and what it can do. The point of this subsection
+is that a \emph{single} formalism covers both lateral/BEC and external impersonation, which is why one model and
+one detector family suffice for both.
+
+\smallskip\noindent\textbf{Attacker goal.} Deliver to victim $v$ a message classified as legitimate. Two variants
+are covered by the same formalism. In \emph{lateral/BEC}, the sender $s$ is a \emph{compromised internal
+account} --- a known contact of $v$ --- writing \emph{outside} its rhythm: coverage $C(s,v)$ is high, yet
+$tc(s,v,t)=0$. In \emph{external impersonation}, $s$ impersonates a role or authority, giving the
+\emph{impression} of high $C$ while lacking real coverage in part of the layers (low structural consistency),
+possibly \emph{fabricating} OSINT edges. In both cases the spear phisher \emph{respects} the domain knowledge ---
+hence the content's credibility --- yet \emph{cannot reproduce it in full}, and it is exactly this inconsistency
+that is the signal.
+
+\smallskip\noindent\textbf{Capabilities and scope.} Upon compromise the attacker has mailbox access and thus
+knows the rhythm (rhythm mimicry is possible); fabricating OSINT footprints is cheap but does not create
+multilayer consistency. \emph{Out of scope}: an adaptive adversary with full knowledge of the graph and training
+poisoning --- we treat the signal as a \emph{cost increase} for the attacker, not an ultimate defense.
+
+\subsection{Two detection invariants}
+\label{sec:invariants}
+The threat model says the attack must break consistency somewhere. The two invariants are the two places it can
+break: \emph{across layers} at a fixed time, and \emph{across time} along a propagation path. They are
+complementary by attack mode, and the reader should carry that pairing into the results.
+
+\smallskip\noindent\textbf{(I) Cross-layer inconsistency (static).} A legitimate new sender is \emph{outside}
+the contacts layer yet \emph{on} an OSINT layer (a shared list or affiliation) --- this consistency justifies
+them; a compromised account is \emph{on} the contacts layer yet \emph{outside} the rhythm --- this inconsistency
+betrays it. The detector reads the vector of layer membership and its (in)consistency, not the content.
+
+\smallskip\noindent\textbf{(II) Cascade dynamics (temporal).} Lateral phishing is a \emph{propagation process}:
+a compromised account sends to contacts, and from them to the next ones. A single message looks locally normal,
+yet the wave creates a \emph{receiving-side signature} --- an atypical pattern of who in the victim's
+neighborhood was hit within the window. A learned temporal model with node memory reads this pattern, scoring an
+event using the state \emph{from before} its bucket (no label leakage; made precise in
+Sec.~\ref{sec:method}).
+
+\smallskip
+Both invariants are complementary by attack mode: static inconsistency catches new
+senders and impersonation, dynamics catches compromises already in the graph. No single layer suffices; the
+signal is the \emph{fusion} and its (in)consistency.
+
+\subsection{Organizational susceptibility}
+\label{sec:m-susc}
+The graph does not only enable detection --- it lets us \emph{measure} exposure. We define the
+\emph{susceptibility} of a node as the vulnerability left by the best credible attack against it, so that
+susceptibility is a property of a position in the graph, independent of any particular detector's tuning.
+
+\begin{definition}[Susceptibility]
+\label{def:susc}
+The susceptibility of node $v$ is the expected \emph{detection uniqueness} of the best \emph{credible}
+(domain-knowledge-respecting) attack targeting $v$,
+\begin{equation}
+\mathrm{Susc}(v) \;=\; \max_{s\in \mathcal{A}(v)} \Big(1 - \Pr[\text{detector detects } (s\!\to\!v)]\Big),
+\label{eq:susc-model}
+\end{equation}
+where $\mathcal{A}(v)$ is the set of \emph{plausible} impersonating senders of $v$ (high apparent coverage $C$,
+e.g.\ an authority or a cross-departmental bridge).
+\end{definition}
+
+\noindent\emph{Proof sketch / reading.} Intuitively, a node is susceptible when there \emph{exists} a credible
+yet hard-to-detect attack against it --- hence the $\max$ over plausible senders and the $1-\Pr[\text{detect}]$
+term. Operationally we do not enumerate $\mathcal{A}(v)$ exhaustively; we correlate $\mathrm{Susc}(v)$ with
+graph-position features (authority/centrality, number of cross-community bridges, rhythm regularity, OSINT
+coverage) and report which features drive it. This yields an \emph{organizational susceptibility profile} ---
+which roles need reinforced control --- that is useful to SOC teams independently of the detector.
+
+\subsection{Definition of detection effectiveness}
+\label{sec:effectiveness}
+Finally we state what it \emph{means} for a method to work here, because the usual ``high accuracy on a
+benchmark'' is exactly the claim we distrust. The definition below is the yardstick every result in the Case
+Study is held to; the concrete protocol that operationalizes it is the Methodology (Sec.~\ref{sec:method}).
+
+A method \emph{works operationally} for residual spear phishing if its advantage is (i) \emph{causally}
+relational-temporal --- it vanishes under shuffle controls that destroy exactly the relational or temporal signal
+--- and (ii) \emph{transferable} --- the ranking of methods established on one topology carries over to another.
+Effectiveness is judged by \emph{sensitivity at a low false-positive rate} with explicit base-rate accounting,
+not by headline AUC: ``$98\%$ on a mass benchmark'' does not attest to detecting spear phishing. This
+detector-independent definition is itself a contribution, and it is what the leak-aware protocol of
+Sec.~\ref{sec:method} enforces.

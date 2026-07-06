@@ -12,20 +12,18 @@ not in the content but in the \emph{inconsistency} with the graph of that knowle
 
 \paragraph{Answers to the research questions.}
 \begin{description}[noitemsep,topsep=2pt]
-  \item[Does the domain knowledge graph detect attacks invisible to content?] \emph{Yes, conditionally.} The cross-layer
-  inconsistency invariant beats a single contact graph and~eliminates false alarms from
-  legitimate new senders (Section~\ref{sec:res-inv1}), provided there is a shared, observable domain-knowledge
-  edge.
-  \item[Does cascade dynamics detect a compromised account?] \emph{Yes.} The temporal invariant removes the blindness
-  of static layers and~--- unlike a volume-based detector --- \emph{does not collapse} against a stealthy
-  attacker (Section~\ref{sec:res-inv2}); the advantage is causally temporal.
-  \item[What is the organizational susceptibility?] \emph{Measurable.} It is governed by the \emph{relation}, not
-  rank: cold external impersonation leaves a margin of $\mathrm{Susc}\!\approx\!0.96$ at every
-  level, whereas in the lateral channel it is the \emph{periphery} of the organization that is most exposed, not
-  the executives (Section~\ref{sec:susceptibility}).
-  \item[What does it mean for the method to ``work''?] We define effectiveness operationally and~conditionally ---
-  through sensitivity at a fixed FPR under leak controls and~a predictiveness probe ---
-  with an explicitly stated floor (cold impersonation) and~an honest threshold (Section~\ref{sec:res-rigor}).
+  \item[\textbf{RQ1} (static signal, T1):] \emph{Yes, conditionally.} The cross-layer inconsistency invariant
+  beats a single contact graph and~eliminates false alarms from legitimate new senders
+  (Section~\ref{sec:res-inv1}), provided there is a shared, observable domain-knowledge edge, and the gain
+  vanishes under the layer/rhythm shuffle control.
+  \item[\textbf{RQ2} (temporal signal, T2):] \emph{Yes.} The temporal invariant removes the blindness of static
+  layers and~--- unlike a volume-based detector --- \emph{does not collapse} against a stealthy attacker
+  (Section~\ref{sec:res-inv2}); the advantage is causally temporal and transfers to three real graphs.
+  \item[\textbf{RQ3} (measurement, T3):] \emph{Measurable, and governed by relation not rank.} Cold external
+  impersonation leaves a margin of $\mathrm{Susc}\!\approx\!0.96$ at every level, whereas in the lateral channel
+  it is the \emph{periphery} that is most exposed, not the executives (Section~\ref{sec:susceptibility}); and at a
+  realistic base rate the detectors are a triage instrument, with effectiveness defined operationally through
+  low-FPR sensitivity under leak controls and a predictivity probe (Section~\ref{sec:res-rigor}).
 \end{description}
 
 \paragraph{Contributions.}

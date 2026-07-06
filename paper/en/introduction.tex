@@ -27,17 +27,34 @@ detection signal must lie \emph{beyond} the content --- in the structure of rela
 \paragraph{Thesis: spear phishing is a violation of domain knowledge.} We formalize the \emph{domain knowledge graph}
 of an organization as a multiplex network of relations over a set of accounts (contacts, collaboration, competencies,
 OSINT traces, temporal rhythm). In this framing, the targeted attack reveals itself through two invariants,
-invisible to a content filter:
-\begin{itemize}[noitemsep,topsep=2pt]
-  \item \textbf{cross-layer (in)consistency}: a genuine relation is consistent across many
-  layers at once; impersonation (external or a compromised account) breaks this pattern --- the sender
-  is ``known'' in one layer, but inconsistent in another (e.g.\ off-rhythm or without an OSINT trace);
-  \item \textbf{propagation dynamics}: lateral phishing is a \emph{cascade process} on the graph --- a compromised
-  account sends to its contacts off its own rhythm, creating a wave-like signature
-  \emph{on the receiving side}, which a single message does not reveal.
-\end{itemize}
-The framing covers \emph{uniformly} both modes of the targeted attack: \textbf{lateral/BEC} (compromised
-internal account, known contact) and \textbf{external impersonation} of a role or authority.
+both invisible to a content filter. The first is \textbf{cross-layer (in)consistency}: a genuine relation is
+consistent across many layers at once, whereas impersonation --- external or a compromised account --- breaks
+the pattern, appearing ``known'' in one layer yet inconsistent in another (off-rhythm, or without an OSINT
+trace). The second is \textbf{propagation dynamics}: lateral phishing is a cascade process on the graph, in which
+a compromised account sends to its contacts off its own rhythm and leaves a wave-like signature on the
+\emph{receiving} side that a single message does not reveal. The framing covers \emph{uniformly} both modes of
+the targeted attack: \textbf{lateral/BEC} (a compromised internal account, a known contact) and \textbf{external
+impersonation} of a role or authority.
+
+\paragraph{Research questions and sub-theses.} We make the thesis testable by splitting it into three research
+questions, each paired with a measurable sub-thesis that the results are held to.
+\begin{description}[leftmargin=1.4em,noitemsep,topsep=2pt]
+  \item[\textbf{RQ1} (static signal).] Does cross-layer inconsistency in the domain knowledge graph separate
+  targeted attacks from legitimate new senders? \emph{Sub-thesis~T1}: a multiplex of domain-knowledge layers
+  raises sensitivity@FPR over a contacts-only graph and removes new-sender false alarms, and the gain vanishes
+  under a layer/rhythm shuffle control.
+  \item[\textbf{RQ2} (temporal signal).] Can a compromised account --- consistent across all static layers --- be
+  detected from cascade dynamics, and does the signal survive a stealthy attacker? \emph{Sub-thesis~T2}: a
+  temporal detector reading the receiving-side wave beats volume detection at low FPR and, unlike it, does not
+  break down under a stealthy attacker; the advantage vanishes under a time-shuffle control and transfers to real
+  topologies.
+  \item[\textbf{RQ3} (measurement and limits).] Which organizational roles and relations are most exposed, and
+  what are the operational limits of the signal? \emph{Sub-thesis~T3}: susceptibility is governed by relation,
+  not rank, and at a realistic base rate the detectors are a triage instrument rather than an autonomous defense.
+\end{description}
+\noindent The goal is not to deliver a deployable filter or a new learning architecture, but to establish that
+the two invariants carry a \emph{causal, transferable} signal and to bound where it stops being operationally
+useful; the learning models are off-the-shelf instruments throughout.
 
 \paragraph{Measurement rigor: what it means for a method to ``work''.} This work places particular emphasis on
 \emph{research methodology}. We show that the results of graph-based detectors are easy to
@@ -52,19 +69,22 @@ serve as \emph{off-the-shelf measurement instruments} that quantify the two inva
 contribution of this work is conceptual and methodological --- a way of \emph{framing and measuring}
 targeted attacks --- not a new machine-learning architecture.
 
-\paragraph{Contributions.}
+\paragraph{Contributions.} The contributions map onto the research questions as follows.
 \begin{enumerate}[noitemsep,topsep=2pt]
-  \item \textbf{The notion and formalization of the domain knowledge graph} and the thesis that spear phishing is its
-  violation --- uniformly for lateral/BEC and external impersonation (Section~\ref{sec:method}).
-  \item \textbf{Two detection invariants} (cross-layer inconsistency, cascade dynamics)
-  beating strong baselines under a content-evasion regime --- with causal controls.
-  \item \textbf{An organizational susceptibility metric}: a measurement of which roles, relations, and communication patterns are
-  most exposed to spear phishing (Section~\ref{sec:susceptibility}).
-  \item \textbf{A leak-aware evaluation methodology} and an \emph{operational} definition of spear phishing detection
-  effectiveness, together with an honest delineation of the limits (FPR, base rate, adversarial cost).
+  \item \textbf{The notion and formalization of the domain knowledge graph} and the thesis that spear phishing is
+  its violation --- uniformly for lateral/BEC and external impersonation (the Model, Section~\ref{sec:model});
+  the foundation for RQ1--RQ3.
+  \item \textbf{Two detection invariants} (cross-layer inconsistency, cascade dynamics) beating strong baselines
+  under a content-evasion regime, with causal controls (\textbf{RQ1}, \textbf{RQ2}; T1, T2).
+  \item \textbf{An organizational susceptibility metric} measuring which roles, relations, and communication
+  patterns are most exposed to spear phishing (\textbf{RQ3}; T3, Section~\ref{sec:susceptibility}).
+  \item \textbf{A leak-aware evaluation methodology} and an \emph{operational} definition of detection
+  effectiveness, with an honest delineation of the limits --- FPR, base rate, adversarial cost (\textbf{RQ3}; T3).
 \end{enumerate}
 
 \paragraph{Organization.} Section~\ref{sec:related} discusses spear phishing, human susceptibility, graph-based
-approaches, and evaluation methodology. Section~\ref{sec:method} formalizes the domain knowledge graph, the threat model,
-and the evaluation protocol. The subsequent sections present the detection results, the susceptibility measurement, and a discussion
+approaches, and evaluation methodology. Section~\ref{sec:model} formalizes the domain knowledge graph, the threat
+model, the two invariants, and the definition of effectiveness; Section~\ref{sec:method} gives the verification
+procedure and the leak-aware protocol. Section~\ref{sec:results} instantiates the model in a case study and
+reports the detection results, the susceptibility measurement, and the rigor analysis, followed by a discussion
 of the limits and practical implications.
