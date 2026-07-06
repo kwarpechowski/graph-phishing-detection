@@ -176,9 +176,8 @@ shuffle control.
 \subsection{Invariant~I: cross-layer inconsistency}
 \label{sec:res-inv1}
 This subsection tests sub-thesis~T1 (RQ1): whether fusing the domain-knowledge layers separates targeted attacks
-from legitimate new senders better than a plain contacts graph, and whether that gain is a real cross-layer
-signal rather than added feature capacity. We answer with a multiplex-vs-single comparison, an explicit
-consistency operator, a layer ablation, and a decorrelation control.
+from legitimate new senders better than a plain contacts graph, and whether that gain reflects real cross-layer
+structure rather than added feature capacity.
 
 \paragraph{Multiplex vs single graph.} We compare the contacts-only detector with the static multiplex (contacts
 $+$ eight OSINT layers from real fields). In Tab.~\ref{tab:inv1} the multiplex beats the single graph (AUC $0.87$
@@ -302,10 +301,9 @@ Invariant~II.
 % ============================================================
 \subsection{Invariant~II: temporal cascade dynamics}
 \label{sec:res-inv2}
-This subsection tests sub-thesis~T2 (RQ2): whether a compromised account --- one that passes every static layer
---- can be caught from the cascade it produces, and whether the signal survives a stealthy attacker where volume
-detection collapses. We build a hierarchy of detectors, stress it against a stealth sweep, and check inductive
-generalization to unseen organizations.
+This subsection tests sub-thesis~T2 (RQ2): whether a compromised account that passes every static layer can be
+caught from the cascade it produces, and whether the signal survives a stealthy attacker where volume detection
+collapses.
 
 \paragraph{Detector hierarchy.} A compromised account passes every static layer (the multiplex is blind, AUC
 $0.49$), so the signal must lie in the dynamics. In Tab.~\ref{tab:detectors} and Fig.~\ref{fig:detectors}, 1-hop
@@ -631,21 +629,19 @@ wins mimicry, fusion combines both.}
 \end{table}
 
 % ============================================================
-\subsection{Rigor: what it means for a detector to ``work''}
+\subsection{Rigor: what it means for a detector to work}
 \label{sec:res-rigor}
 This subsection holds the results to the definition of effectiveness (Sec.~\ref{sec:effectiveness}) and marks the
-operational limits (part of RQ3). We report the full sensitivity--FPR curve with significance testing, translate
-the operating point to a realistic base rate, and audit robustness to training-label noise, so that the headline
-numbers are read as a lower bound rather than a deployment claim.
+operational limits, so that the headline numbers are read as a lower bound rather than a deployment claim.
 
 \paragraph{The whole curve and significance.} Instead of a single threshold we report the sensitivity--FPR curve
 (Fig.~\ref{fig:fpr}) and a paired test. At a realistically low FPR ($0.1\%$) all methods are weak, which we state
 plainly. Hardening the main contrast on~$20$~seeds at the stealthy point (Tab.~\ref{tab:headline-ci}), the
 receiving-side signal beats the volume detector significantly and with a large effect (temporal GNN $+0.081$ AUC,
 $p<0.001$, Cliff~$\delta{=}0.88$), whereas the advantage of the learned GNN over the hand-crafted context is
-operating-point dependent and insignificant in key regimes. The credible claim is therefore not that the GNN
-beats everything, but that under a stealthy attack the receiving-side signal, learned or hand-crafted,
-significantly surpasses volume detection, which breaks down.
+operating-point dependent and insignificant in key regimes. The credible claim is narrow: under a stealthy attack the
+receiving-side signal, whether learned or hand-crafted, significantly surpasses volume detection, which breaks
+down. The learned GNN does not beat everything.
 
 \begin{table}[t]\centering
 \begin{tabular}{lccc}

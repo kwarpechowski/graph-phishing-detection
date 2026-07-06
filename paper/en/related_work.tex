@@ -103,12 +103,11 @@ knowledge graph} of corporate email for security. This is the gap we fill.
 
 \subsection{Evaluation rigor: pitfalls and leak control}
 \label{sec:rw-eval}
-A central caution is that ML detectors in security are easily \emph{inflated} by leaks, unfair splitting, and
-headline AUC instead of operational metrics \citep{arp2022dos}; time-aware evaluation (TESSERACT) shows how
-temporal leakage distorts results \citep{pendlebury2019tesseract}. These works motivate our \emph{leak-aware}
-protocol and \emph{predictivity probe}: we ask not only ``how high is the AUC'' but ``whether the result
-transfers beyond a single corpus and whether it is an artifact of the generator''. By this same measure we
-define the notion of a method's effectiveness.
+A central caution is that ML detectors in security are easily inflated by leaks, unfair splitting, and headline
+AUC in place of operational metrics \citep{arp2022dos}; time-aware evaluation (TESSERACT) shows how temporal
+leakage distorts results \citep{pendlebury2019tesseract}. These works motivate our leak-aware protocol and
+predictivity probe, which ask not how high the AUC is but whether the result transfers beyond a single corpus and
+whether it is an artifact of the generator. We use the same standard to define a method's effectiveness.
 
 \subsection{Gaps and positioning of the work}
 \label{sec:rw-gap}
