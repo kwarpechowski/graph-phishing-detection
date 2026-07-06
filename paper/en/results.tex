@@ -277,9 +277,9 @@ contribution of the hierarchy/domain layers rises --- redundancy is an artifact 
 the task by threat (Fig.~\ref{fig:bythreat}) shows the complementarity directly: for new senders the signal is
 carried by OSINT (alone $0.77$) and time is useless ($0.50$), and for compromises the reverse holds (time $0.87$,
 OSINT $0.50$). Each group is indispensable for its own failure mode. The sensitivity analysis
-(Fig.~\ref{fig:sensitivity}) confirms that the ranking (full $>$ contacts $>$ static) is qualitatively stable
-across the whole noise range and for every $N\in\{40,\dots,150\}$, though the absolute sensitivities@FPR$1\%$
-depend on the fraction of off-rhythm mail, which is why calibration on the real Enron is needed.
+(Fig.~\ref{fig:sensitivity}) confirms that the ranking (full $>$ contacts $>$ static) holds across the whole
+noise range and for every $N\in\{40,\dots,150\}$, though the absolute sensitivities@FPR$1\%$ depend on the
+fraction of off-rhythm mail, which is why calibration on the real Enron is needed.
 
 \begin{figure}[t]\centering
 \includegraphics[width=0.8\linewidth]{fig_layer_by_threat.pdf}
@@ -290,7 +290,7 @@ indispensable, time superfluous. \emph{Right}: compromises --- the reverse. Laye
 \begin{figure}[t]\centering
 \includegraphics[width=\linewidth]{fig_sensitivity.pdf}
 \caption[Sensitivity analysis]{Sensitivity (AUC). The ranking and the multiplex advantage hold
-qualitatively at every noise rate and every $N$.}
+at every noise rate and every $N$.}
 \label{fig:sensitivity}
 \end{figure}
 
@@ -305,11 +305,11 @@ This subsection tests sub-thesis~T2 (RQ2): whether a compromised account that pa
 caught from the cascade it produces, and whether the signal survives a stealthy attacker where volume detection
 collapses.
 
-\paragraph{Detector hierarchy.} A compromised account passes every static layer (the multiplex is blind, AUC
-$0.49$), so the signal must lie in the dynamics. In Tab.~\ref{tab:detectors} and Fig.~\ref{fig:detectors}, 1-hop
-features are blind ($0.70$, sensitivity@FPR$1\%\!\approx\!0$), hand-crafted multi-hop context raises this to
-$0.87$, the static GNN ($0.77$) sees the topology but not time, and the temporal GNN leads at AUC $0.90$,
-sensitivity@FPR$1\%$ $0.139$. The advantage is causally temporal: after a time permutation the temporal GNN drops
+\paragraph{Detector hierarchy.} A compromised account passes every static layer, so the multiplex cannot see it
+(AUC $0.49$) and the signal must lie in the dynamics. The detectors form a clear hierarchy on this task
+(Tab.~\ref{tab:detectors}, Fig.~\ref{fig:detectors}): local 1-hop features are near-useless (AUC $0.70$,
+sensitivity@FPR$1\%\!\approx\!0$), a hand-crafted multi-hop context reaches $0.87$, a static GNN sees the
+topology but not time ($0.77$), and the temporal GNN leads (AUC $0.90$, sensitivity@FPR$1\%$ $0.139$). The advantage is causally temporal: after a time permutation the temporal GNN drops
 to the static level ($0.90\!\to\!0.72$, sensitivity $0.139\!\to\!0.027$). Robustness to architecture: TGN-lite and TGAT-lite beat the hand-crafted
 context in each of the $5$~seeds; the library TGN \citep{rossi2020temporal} matches it on the
 operational metric --- the advantage is a property of the \emph{paradigm}, not of a specific model.
