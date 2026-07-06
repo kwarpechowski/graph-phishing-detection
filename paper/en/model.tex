@@ -31,9 +31,6 @@ judged by one definition of effectiveness and read off as susceptibility.
   \node[lay, right=14mm of org, yshift=6mm] (l1) {structural\\{\scriptsize contacts, hierarchy, domain}};
   \node[lay, below=2mm of l1] (l2) {OSINT\\{\scriptsize \texttt{c3}--\texttt{c8}}};
   \node[lay, below=2mm of l2] (l3) {temporal\\{\scriptsize rhythm $\tau$}};
-  \begin{scope}[on background layer]
-    \node[draw, dashed, rounded corners, fit=(l1)(l2)(l3), inner sep=4pt, label=above:{\footnotesize domain knowledge graph $\mathcal{G}$ (Def.~\ref{def:dkg})}] (dkg) {};
-  \end{scope}
   % Level 3: invariants
   \node[box, right=16mm of l1] (i1) {Invariant~I\\{\scriptsize cross-layer\\inconsistency $C(s,v)$}};
   \node[box, right=16mm of l3] (i2) {Invariant~II\\{\scriptsize cascade\\dynamics $m_v^{(b)}$}};
@@ -43,6 +40,8 @@ judged by one definition of effectiveness and read off as susceptibility.
   % Level 5: outputs
   \node[box, right=12mm of d1, yshift=-8mm, fill=green!6] (eff) {Effectiveness\\{\scriptsize leak-aware, low-FPR\\(Sec.~\ref{sec:effectiveness})}};
   \node[box, below=10mm of eff, fill=green!6] (susc) {Susceptibility\\{\scriptsize $\mathrm{Susc}(v)$ (Def.~\ref{def:susc})}};
+  % domain knowledge graph container (drawn without background layer -- \resizebox-safe)
+  \node[draw, dashed, rounded corners, fit=(l1)(l2)(l3), inner sep=4pt, label=above:{\footnotesize domain knowledge graph $\mathcal{G}$ (Def.~\ref{def:dkg})}] (dkg) {};
   % flows
   \draw[flow] (org) -- (dkg);
   \draw[flow] (l1.east) -- (i1.west);
