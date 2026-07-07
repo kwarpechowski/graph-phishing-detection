@@ -84,10 +84,6 @@ $m_v^{(b)}$ & temporal-GNN memory of node $v$ after bucket $b$ \\
 
 \subsection{Domain knowledge graph}
 \label{sec:dkg}
-This subsection defines the central object of the paper and the two scalar quantities that every later result
-depends on. It is the foundation for both detectors and the susceptibility measure, and it is referred to
-throughout by the symbol $\mathcal{G}$.
-
 An organization's domain knowledge is relational: who knows whom, who is responsible for what, which
 competencies, routines, and public footprints they have. It is modeled as a multiplex network, one set of
 accounts with many types of relation stacked over it, each graph recording one kind of fact: who emails whom,
@@ -112,10 +108,10 @@ layers is given in the Case Study (Sec.~\ref{sec:cs-setup}, Tab.~\ref{tab:layers
 symbols.
 \end{definition}
 
-\noindent\emph{Reading the definition.} The intuition is a stack of same-sized graphs over one set of people,
-each recording one kind of fact. The two numbers below --- $C$ and $tc$ --- summarize the agreement or
-disagreement across that stack for a single sender--victim pair, and they are the only inputs the detectors and
-the susceptibility measure use.
+\noindent Intuitively, the definition is a stack of same-sized graphs over one set of people, each recording one
+kind of fact. The two numbers below --- $C$ and $tc$ --- summarize the agreement or disagreement across that
+stack for a single sender--victim pair, and they are the only inputs the detectors and the susceptibility
+measure use.
 
 \noindent The property we exploit is the synergy between layers: a genuine relation is consistent across
 many of them at once --- a known contact, in its own rhythm, with a real collaboration footprint --- whereas a
@@ -131,9 +127,8 @@ the two detection invariants below make this precise.
 
 \subsection{Threat model: unifying lateral and external}
 \label{sec:threat}
-This subsection fixes what the attacker can do and what it wants, so that the invariants in
-Sec.~\ref{sec:invariants} have a precise target. A single formalism covers both lateral/BEC and external
-impersonation, so one model and one detector family suffice for both.
+A single formalism covers both lateral/BEC and external impersonation, so one model and one detector family
+suffice for both.
 
 \smallskip\noindent\textbf{Attacker goal.} Deliver to victim $v$ a message classified as legitimate. Two variants
 follow the same formalism. In lateral/BEC the sender $s$ is a compromised internal account, a known contact of
@@ -145,13 +140,13 @@ but cannot reproduce it in full, and that inconsistency is the signal.
 \smallskip\noindent\textbf{Capabilities and scope.} On compromise the attacker gains mailbox access and so knows
 the rhythm, making rhythm mimicry possible; fabricating OSINT footprints is cheap but does not create multilayer
 consistency. Out of scope is an adaptive adversary with full knowledge of the graph and training poisoning; we
-treat the signal as a cost increase for the attacker, not an ultimate defense.
+treat the signal as a cost increase for the attacker rather than an ultimate defense.
 
 \subsection{Two detection invariants}
 \label{sec:invariants}
-The threat model says the attack must break consistency somewhere. This subsection names the two places it can
-break and shows why each invariant maps to one attack mode. Their complementarity is the structural reason a
-single detector cannot cover the residual $2\%$, and it is what the Case Study tests in
+The threat model says the attack must break consistency somewhere. It can break in two places, each mapping
+to one attack mode, and their complementarity is the structural reason a single detector cannot cover the
+residual $2\%$, which is what the Case Study tests in
 Sec.~\ref{sec:res-inv1} and~\ref{sec:res-inv2}.
 
 \smallskip\noindent\textbf{(I) Cross-layer inconsistency (static).} A legitimate new sender sits outside the
@@ -172,9 +167,9 @@ its (in)consistency.
 
 \subsection{Organizational susceptibility}
 \label{sec:m-susc}
-Beyond detection, the graph exposes who is most at risk. This subsection defines susceptibility as a property of
-position in the graph, independent of any detector's tuning, and it is what
-Sec.~\ref{sec:susceptibility} later measures to answer RQ3.
+Beyond detection, the graph exposes who is most at risk. Susceptibility is a property of position in the
+graph, independent of any detector's tuning, and Sec.~\ref{sec:susceptibility} later measures it to answer
+RQ3.
 
 \noindent\emph{Intuition.} A node is susceptible when the most credible attack against it is also the hardest
 to detect. The definition takes the maximum over plausible attackers and the complement of the detection
@@ -203,14 +198,14 @@ reinforced control, independently of the detector.
 
 \subsection{Definition of detection effectiveness}
 \label{sec:effectiveness}
-This subsection states the standard every result in the Case Study is held to. It is detector-independent and
-operational, and the Methodology (Sec.~\ref{sec:method}) is the protocol that enforces it.
+The standard every result in the Case Study is held to is detector-independent and operational, and the
+Methodology (Sec.~\ref{sec:method}) is the protocol that enforces it.
 
 The usual claim of high accuracy on a benchmark is the one we distrust.
 
 A method works operationally for residual spear phishing when its advantage is causally relational-temporal,
 vanishing under shuffle controls that destroy the relational or temporal signal, and transferable, so that the
 ranking of methods established on one topology carries over to another. Effectiveness is judged by sensitivity
-at a low false-positive rate with explicit base-rate accounting, not by headline AUC; $98\%$ on a mass benchmark
-does not attest to detecting spear phishing. This detector-independent definition is itself a contribution, and
-it is what the leak-aware protocol of Sec.~\ref{sec:method} enforces.
+at a low false-positive rate with explicit base-rate accounting, rather than by headline AUC; $98\%$ on a mass benchmark
+does not attest to detecting spear phishing. This is what the leak-aware protocol of Sec.~\ref{sec:method}
+enforces.

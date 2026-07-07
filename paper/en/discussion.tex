@@ -9,18 +9,11 @@ margin lies, and the leak-aware protocol fixes what the numbers can and cannot c
 outline the practical implications, and state the limits.
 
 \subsection{Interpretation: two invariants, two failure modes}
-This subsection reads the results of Sec.~\ref{sec:res-inv1} and~\ref{sec:res-inv2} together and explains
-why the two invariants cover the residual $2\%$ where single approaches fail. It is the interpretive bridge
-from numbers to the practical implications that follow.
-The two invariants are complementary responses to two disjoint modes of targeted attack. Cross-layer
-inconsistency (\ref{sec:res-inv1}) addresses the new sender: role or authority impersonation is known in one
-layer, such as a name or domain, but inconsistent in others, with no OSINT trace and no relationship history,
-which breaks the pattern of a genuine relationship. Cascade dynamics (\ref{sec:res-inv2}) addresses the
-compromised account, which is consistent across all static layers because it is a genuine contact, yet betrays
-itself in time by sending off-rhythm and creating a recipient-side cascade. The per-threat ablation makes the
-complementarity concrete: for new senders the signal is carried by OSINT and time is useless, and for compromises
-it is the reverse. This is why single approaches fail on the residual $2\%$ (a content filter, a contact graph,
-or a volumetric detector on its own): each is blind to one of the two modes.
+The two invariants are complementary responses to two disjoint modes of targeted attack
+(Sec.~\ref{sec:res-inv1},~\ref{sec:res-inv2}). The per-threat ablation makes the complementarity concrete: for
+new senders the signal is carried by OSINT and time is useless, and for compromises it is the reverse. This is
+why single approaches fail on the residual $2\%$ (a content filter, a contact graph, or a volumetric detector on
+its own): each is blind to one of the two modes.
 
 A second result concerns the stealthy attacker. A volumetric detector in the spirit of COMPA
 \citep{stringhini2015thataint} assumes that a compromise shows up as a surge; when the attacker deliberately
@@ -31,28 +24,23 @@ message; we differ in locating that signal in the dynamics of the domain knowled
 or relays.
 
 \subsection{Practical implications}
-This subsection turns the susceptibility measurement of Sec.~\ref{sec:susceptibility} into actionable
-recommendations for SOC teams. The central finding --- that the periphery, not the executives, is most exposed
-under a lateral threat --- runs counter to common practice and is the most concrete takeaway of the paper.
-Typical defense programs treat executives as the most exposed. Our measurement shows that for the lateral channel
-the opposite holds: executives, densely embedded in the domain knowledge graph, are best protected by the
-structural signal alone, while the largest unaddressed margin lies on the periphery, the mid- and junior-level
-roles. The recommendation is two-part. First, awareness programs and hard controls, such as out-of-band
-verification for transfers, should cover the periphery and not only the top. Second, detection resources are
-worth directing where the domain knowledge graph is sparse, since that is where the residual margin is largest.
-For the cold impersonation channel the message is different: no relational layer suffices
-($\mathrm{Susc}\!\approx\!0.96$ regardless of rank), so here the graph must be combined with content and process
-controls, as the fusion experiment confirms. The domain knowledge graph is therefore a prioritization layer
-rather than a standalone product: it indicates who, and through which relationship, is most weakly protected.
+The central finding from Sec.~\ref{sec:susceptibility} --- that the periphery, not the executives, is most
+exposed under a lateral threat --- runs counter to common practice and is the most concrete takeaway of the
+paper. Typical defense programs treat executives as the most exposed, yet for the lateral channel the opposite
+holds: the largest unaddressed margin lies on the periphery, the mid- and junior-level roles. The recommendation
+is two-part. First, awareness programs and hard controls, such as out-of-band verification for transfers, should
+cover the periphery and not only the top. Second, detection resources are worth directing where the domain
+knowledge graph is sparse, since that is where the residual margin is largest. For the cold impersonation
+channel no relational layer suffices ($\mathrm{Susc}\!\approx\!0.96$ regardless of rank), so here the graph must
+be combined with content and process controls, as the fusion experiment (Sec.~\ref{sec:res-content}) confirms.
+The domain knowledge graph is therefore a prioritization layer rather than a standalone product: it indicates
+who, and through which relationship, is most weakly protected.
 
 The result also bears on the human factor. Human susceptibility rises under time pressure and authority cues
 while awareness training moderates it only partially (Section~\ref{sec:related}), so a structural susceptibility
 measure allows limited training interventions to target the roles the technology protects least.
 
 \subsection{Limitations}
-This subsection states the scope of the claims, so that the headline numbers are not overread. Each
-limitation maps to a specific assumption in the Methodology and is flagged where it first arises in the
-results.
 The limitations define the scope of the claims. \textit{First, maliciousness is synthetic.} No public corpus
 links real OSINT facts with labeled compromises, so we generate attack labels on real structure (Enron, SNAP) or
 on a synthetic population of twins. We therefore validate the mechanism (out-of-rhythm mail separates
@@ -71,10 +59,10 @@ transfer directly to every organization. The direction is also partly definition
 construction, so their stronger structural protection follows in part from how we tied layer richness to
 seniority, a coupling that should be stress-tested under alternative assignments before the periphery-first
 recommendation is generalized. \textit{Third, the scale is limited} ($N{=}150$ twins; real graphs up to about 2k
-nodes), so the comparison with heavy GNN architectures (GATNE/HGT) is a sanity check, not a full benchmark.
+nodes), so the comparison with heavy GNN architectures (GATNE/HGT) is a sanity check rather than a full benchmark.
 \textit{Fourth, the operational threshold.} Even the best operating point (sensitivity@FPR$1\%$) is orders of
 magnitude from the deployment threshold on real mail (Ho et al.\ \citep{ho2019detecting}: $<\!4$~FP/M); we report
-it as a requirement we are starting to meet, not a record.
+it as a requirement we are beginning to meet rather than a record.
 
 \subsection{Future work directions}
 The most important next step is validation on a corpus with labeled, real compromises, turning the proof of

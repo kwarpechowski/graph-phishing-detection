@@ -13,10 +13,6 @@ Case Study (Sec.~\ref{sec:results}).
 
 \subsection{Overview of the verification procedure}
 \label{sec:m-overview}
-This subsection maps the four steps of the verification, from instantiating $\mathcal{G}$ to reading off
-susceptibility, so that the reader knows where each later subsection fits. Each step is detailed in the
-subsections that follow.
-
 The procedure has four steps that mirror the model. First, instantiate the domain knowledge graph
 $\mathcal{G}$ (Def.~\ref{def:dkg}) on a population, deriving the relation layers $\mathcal{L}$ and the temporal
 rhythm $\tau$. Then build the two detectors, one per invariant (Sec.~\ref{sec:invariants}), as off-the-shelf
@@ -26,9 +22,7 @@ topologies and reads off susceptibility (Def.~\ref{def:susc}).
 
 \subsection{Leak-aware evaluation protocol}
 \label{sec:eval}
-Graph detectors are easy to inflate, so rigorous evaluation here is a contribution, not a formality. This
-subsection defines the four requirements that guard against inflated results; the Methodology subsections that
-follow are the concrete realization of each.
+Graph detectors are easy to inflate, which is why the protocol below guards against inflated results.
 
 The protocol enforces four requirements. A matched design makes legitimate traffic and attack edges share the same
 distribution of endpoints and degrees, so they differ only by the relational-temporal pattern and the
@@ -42,9 +36,9 @@ its advantage is causally relational-temporal, vanishing under controls, and tra
 
 \subsection{Detectors and causal controls}
 \label{sec:m-detectors}
-This subsection turns the two invariants into concrete detectors and pairs each with the control that isolates
-its signal. The design principle is uniform: features encode graph position and timing, never identity, so every
-detector is inductive and applies to accounts unseen in training.
+The design principle is uniform: features encode graph position and timing, never identity, so every detector is
+inductive and applies to accounts unseen in training. Each invariant below is paired with the control that
+isolates its signal.
 
 \smallskip\noindent\textbf{Invariant~I (cross-layer).} For a sender--victim pair we compare three feature sets of
 increasing structure, contacts-only, static multiplex (contacts $+$ OSINT layers), and full (adding temporal
@@ -131,10 +125,6 @@ temporal} propagation context.}
 
 \subsection{Event model and data split}
 \label{sec:m-events}
-This subsection defines what counts as a single observation and how the data is split for training and
-evaluation. The event model is the bridge between the abstract invariants and the concrete experiments in the
-Case Study.
-
 An event is a pair (sender $s$, victim $v$) with a bucket $b$, labeled legitimate or attack, with two-sided noise
 so that the classes are not perfectly separable. Legitimate events are of three kinds: known (a contact, in
 rhythm), new-OSINT (outside contacts but on an OSINT layer), and cold (outside all layers, an irreducible source
@@ -146,9 +136,6 @@ structure, with a Wilcoxon test where significance matters. The exact seed count
 
 \subsection{Metrics, base rate, and threats to validity}
 \label{sec:m-metrics}
-This subsection defines the metrics and the threats to validity that the Case Study reports against. It is
-where the definition of effectiveness (Sec.~\ref{sec:effectiveness}) meets concrete numbers.
-
 The headline metric is sensitivity at a fixed low FPR, the operational working point,
 $\text{sensitivity}@\mathrm{FPR} = \max\{\mathrm{TPR}(\theta):\mathrm{FPR}(\theta)\le\alpha\}$; AUC is reported
 alongside it. Real systems operate at a far stricter FPR ($<\!4$~FP/million, \citep{ho2019detecting}), so the FPR
