@@ -15,7 +15,7 @@ Case Study (Sec.~\ref{sec:results}).
 \label{sec:m-overview}
 The procedure has four steps that mirror the model. First, instantiate the domain knowledge graph
 $\mathcal{G}$ (Def.~\ref{def:dkg}) on a population, deriving the relation layers $\mathcal{L}$ and the temporal
-rhythm $\tau$. Then build the two detectors, one per invariant (Sec.~\ref{sec:invariants}), as off-the-shelf
+rhythm $\tau$. Then build the two detectors, one per invariant (Sec.~\ref{sec:invariants}), as standard
 learning instruments over graph-position features. Evaluation follows under the leak-aware protocol below, so
 that any advantage due to leakage or capacity is destroyed by a control; the last step checks transfer to real
 topologies and reads off susceptibility (Def.~\ref{def:susc}).
@@ -29,7 +29,7 @@ distribution of endpoints and degrees, so they differ only by the relational-tem
 degree/identity confounder is removed \citep{arp2022dos}. Leak control adds a temporal split of the rhythm
 estimate, an audit of the fraction of out-of-rhythm mail, and a control that shuffles temporal order, each of
 which zeroes the signal if it is an artifact \citep{pendlebury2019tesseract}. Operational metrics report
-sensitivity at a low FPR rather than headline AUC, with explicit base-rate arithmetic. A predictivity probe then
+sensitivity at a low FPR, with explicit base-rate arithmetic, dropping headline AUC. A predictivity probe then
 asks whether the ranking of methods established on one topology transfers to another (real Enron, SNAP graphs).
 Together these give the working definition of effectiveness of Sec.~\ref{sec:effectiveness}: a method works when
 its advantage is causally relational-temporal, vanishing under controls, and transferable beyond a single corpus.
@@ -40,12 +40,11 @@ The design principle is uniform: features encode graph position and timing, neve
 inductive and applies to accounts unseen in training. Each invariant below is paired with the control that
 isolates its signal.
 
-\smallskip\noindent\textbf{Invariant~I (cross-layer).} For a sender--victim pair we compare three feature sets of
-increasing structure, contacts-only, static multiplex (contacts $+$ OSINT layers), and full (adding temporal
-consistency), with a gradient-boosting classifier. The causal control shuffles layer membership and rhythm: if
+\smallskip For a sender--victim pair we compare three feature sets of increasing structure --- contacts-only, static multiplex (contacts $+$ OSINT layers), and full (adding temporal
+consistency) --- with a gradient-boosting classifier. The causal control shuffles layer membership and rhythm: if
 the signal is genuine cross-layer consistency, the control must collapse the advantage to chance.
 
-\smallskip\noindent\textbf{Invariant~II (cascade).} The second invariant operates on the contacts layer
+\smallskip The second invariant operates on the contacts layer
 $G=(V,E)$ with time divided into $T$ buckets. An attack is a cascade: a patient-zero $s_0$ sends malicious mail
 to contacts; each recipient becomes a carrier with probability $p_\mathrm{inf}$ and propagates to depth $H$
 (Fig.~\ref{fig:cascade}). A single event $u\!\to\!v$ is locally indistinguishable from legitimate mail; the
@@ -54,13 +53,13 @@ hit just before. Four detectors of increasing temporal awareness are compared: a
 bound), a hand-crafted cascade context (1-hop plus burst, freshness, and wave density), a static GNN (topology,
 no time), and a temporal GNN with node memory.
 
-\smallskip\noindent\emph{Intuition.} The two equations below differ in one thing only: whether the model may
+\smallskip The two equations below differ in one thing only: whether the model may
 look forward in time. The static score summarizes a node by its neighbors in the whole aggregated graph, seeing
 who is connected to whom but not in what order. The temporal score instead keeps a running memory updated
 bucket by bucket and read one bucket before the event it scores, so it can only use the past. That past-only
 reading is what lets the receiving-side wave become a signal, and it is also what a time-shuffle destroys.
 
-\smallskip\noindent Formally, the static GNN builds embeddings from the aggregated graph with a normalized
+\smallskip Formally, the static GNN builds embeddings from the aggregated graph with a normalized
 adjacency $\hat{A}$ and features $X$,
 \begin{equation}
 H = \hat{A}\,\sigma\!\big(\hat{A}\,X\,W_1\big)\,W_2,
@@ -77,12 +76,12 @@ m_v^{(b)} &= \mathrm{GRU}\!\Big(\tfrac{1}{d_v^{(b)}}\!\!\sum_{u:\,(u\to v)\in b}
 \label{eq:temp-mem}
 \end{align}
 
-\emph{Why the shuffle control is exact.} Since $\mathrm{score}_{\mathrm{stat}}$ is permutation-invariant in time
+The shuffle control is exact: since $\mathrm{score}_{\mathrm{stat}}$ is permutation-invariant in time
 while $\mathrm{score}_{\mathrm{temp}}$ is not, the drop in $\mathrm{AUC}_{\mathrm{temp}}$ after time shuffling
 measures the amount of temporal information the model used. This is the formal justification of the temporal
 control.
 
-\smallskip\noindent\textbf{Baselines for compromises.} Beyond the GNN we implement two strong practical methods.
+\smallskip Beyond the GNN we implement two strong practical methods.
 A volumetric baseline in the spirit of COMPA \citep{egele2013compa,stringhini2015thataint} flags a sudden spike
 in a sender's volume within a short window (an \texttt{IsolationForest}), and a path-based baseline in the spirit
 of Hopper \citep{ho2021hopper} looks for a causal precursor, momentum, and a rare target. We implement their

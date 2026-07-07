@@ -78,7 +78,7 @@ For Invariant~I, each layer is a separate graph over the same $150$~nodes
 graph; the \emph{OSINT} layers are built from fields \texttt{c3}--\texttt{c8} --- two personas share an edge in a
 layer when they share a concrete, publicly observable field value (co-occurrence). Generic values (e.g.\
 ``LinkedIn'') are filtered out, and fields yielding a degenerate (near-complete) or too-sparse layer are omitted
---- a realistic data limitation rather than a designed convenience. The only adversarial knob is the \emph{fabrication
+--- a realistic data limitation, a designed convenience. The only adversarial knob is the \emph{fabrication
 rate} (how many OSINT edges the attacker injects), with which we study robustness. Table~\ref{tab:layers} gives
 the edge semantics, confidence weight $w_L$, and edge count of each layer.
 
@@ -124,8 +124,7 @@ propagation at all --- the \emph{blind spot} that no cascade detector can see, i
 boundary of the threat model. \emph{(iv)~Fabrication sweep} (attacker injects up to $50\%$ false OSINT edges):
 stresses Invariant~I under forged domain knowledge. Every headline contrast is averaged over $\ge\!20$ random
 seeds on synthetic data; real-graph validations use $8$/$5$/$3$~seeds (lower variance on a fixed structure), with
-a Wilcoxon test where significance matters. These scenarios and their purposes recur, by name, throughout the
-results below.
+a Wilcoxon test where significance matters.
 
 \begin{table}[t]\centering\small
 \begin{tabular}{ll}
@@ -204,8 +203,7 @@ coverage; known sender off-rhythm; new sender on OSINT; entirely off-graph) are 
 concatenation (Tab.~\ref{tab:consistency}). Under logistic regression the explicit operator improves AUC
 ($0.840\!\to\!0.860$), because the linear model cannot learn the conjunction on its own; under trees the
 difference vanishes ($0.858$ vs $0.860$). The four explicit measures almost match the full concatenation, so the
-signal is concise consistency, and its value is explainability and deployability (a single query) rather than
-higher recall.
+signal is concise consistency, and its value is explainability and deployability (a single query) more than higher recall.
 
 \begin{table}[t]\centering
 \begin{tabular}{lcc}
@@ -274,7 +272,7 @@ carried by OSINT (alone $0.77$) and time is useless ($0.50$), and for compromise
 OSINT $0.50$). Each group is indispensable for its own failure mode. The sensitivity analysis
 (Fig.~\ref{fig:sensitivity}) confirms that the ranking (full $>$ contacts $>$ static) holds across the whole
 noise range and for every $N\in\{40,\dots,150\}$, though the absolute sensitivities@FPR$1\%$ depend on the
-fraction of off-rhythm mail, which is why calibration on the real Enron is needed.
+fraction of off-rhythm mail, so calibration on the real Enron is needed.
 
 \begin{figure}[t]\centering
 \includegraphics[width=0.8\linewidth]{fig_layer_by_threat.pdf}
@@ -289,7 +287,7 @@ at every noise rate and every $N$.}
 \label{fig:sensitivity}
 \end{figure}
 
-\noindent\textbf{Where this leaves us.} Multiplex fusion beats the single graph, eliminates new-sender false
+\noindent Multiplex fusion beats the single graph, eliminates new-sender false
 alarms, and the advantage vanishes after shuffling. Yet it sees only the new sender. A compromised account is
 already a genuine contact, consistent across every static layer, and to it Invariant~I is blind --- which is the
 question Invariant~II takes up.
@@ -307,7 +305,7 @@ sensitivity@FPR$1\%\!\approx\!0$), a hand-crafted multi-hop context reaches $0.8
 topology but not time ($0.77$), and the temporal GNN leads (AUC $0.90$, sensitivity@FPR$1\%$ $0.139$). The advantage is causally temporal: after a time permutation the temporal GNN drops
 to the static level ($0.90\!\to\!0.72$, sensitivity $0.139\!\to\!0.027$). Robustness to architecture: TGN-lite and TGAT-lite beat the hand-crafted
 context in each of the $5$~seeds; the library TGN \citep{rossi2020temporal} matches it on the
-operational metric --- the advantage is a property of the \emph{paradigm}, not of a specific model.
+operational metric --- the advantage is a property of the \emph{paradigm}, independent of the specific model.
 
 \begin{table}[t]\centering
 \begin{tabular}{lcc}
@@ -335,7 +333,7 @@ time $\to$ hand-crafted window $\to$ learned dynamics. Last row: time-shuffle co
 The stealthy attacker breaks volume, but not dynamics: against an attacker who evades detection by
 spreading its sends over time ($K$~carriers, one per interval), the volume detector breaks down (AUC $0.72\!\to\!0.44$ at
 $K{=}1$, below random) because the sending burst disappears, while the temporal GNN holds (AUC $0.60$,
-sensitivity@FPR$1\%$ $0.039$ vs $0.017$) because it reads the receiving side of the cascade
+sensitivity@FPR$1\%$ $0.039$ vs $0.017$) because it captures the receiving side of the cascade
 (Tab.~\ref{tab:stealth}, Fig.~\ref{fig:stealth}). Against the path-based baseline (Hopper, Tab.~\ref{tab:hopper})
 the path-based detector wins under extreme stealth but degrades with reach, and the temporal GNN is the only
 detector with no breakdown regime ($0.65$--$0.82$). One blind spot remains (Tab.~\ref{tab:blindspot}): a surgical
@@ -443,7 +441,7 @@ number of companies. The advantage holds inductively, but decreases ($4.4\times\
 \label{fig:scale}
 \end{figure}
 
-\noindent\textbf{This still leaves open who is most exposed.} Cascade dynamics overcome the insensitivity of
+\noindent Cascade dynamics overcome the insensitivity of
 static layers to compromises and, unlike the volume detector, hold against a stealthy attacker; the advantage
 is causally temporal and generalizes inductively. The detectors are instruments; the next question is who they
 protect least.
@@ -486,9 +484,9 @@ $\mathrm{Susc}=1-\mathrm{Recall}$ is the residual margin, i.e.\ the fraction of 
 \label{tab:susc}
 \end{table}
 
-\noindent Three things follow. Susceptibility is governed by relation, not rank: cold impersonation leaves
+\noindent Three things follow. The channel, not the seniority, drives susceptibility: cold impersonation leaves
 $\mathrm{Susc}\!\approx\!0.96$ at every level, because no layer covers a sender from off-graph, and that sets a
-structural floor under the residual $2\%$. A compromised account is less dangerous, $0.855$ against $0.962$, since
+structural floor under the targeted tail. A compromised account is less dangerous, $0.855$ against $0.962$, since
 a known contact off-rhythm is a sharp, low-FP conjunction. And in the lateral channel rank acts
 counterintuitively: executives, richest in domain-knowledge layers, are best protected at $0.924$, while the
 peripheral mid- and junior-level roles are most exposed at $0.838$/$0.840$. What protects is not status but one's
@@ -639,9 +637,9 @@ For the whole curve and significance, instead of a single threshold we report th
 plainly. Hardening the main contrast on~$20$~seeds at the stealthy point (Tab.~\ref{tab:headline-ci}), the
 receiving-side signal beats the volume detector significantly and with a large effect (temporal GNN $+0.081$ AUC,
 $p<0.001$, Cliff~$\delta{=}0.88$), whereas the advantage of the learned GNN over the hand-crafted context is
-operating-point-dependent and not statistically significant in key regimes. The credible claim is narrow: under a stealthy attack the
+operating-point-dependent and not statistically significant in key regimes. The claim we can defend is narrow: under a stealthy attack the
 receiving-side signal, whether learned or hand-crafted, significantly surpasses volume detection, which breaks
-down. The learned GNN does not beat everything.
+down.
 
 \begin{table}[t]\centering
 \begin{tabular}{lccc}
@@ -669,8 +667,7 @@ precision drops when the attack is rare. From Bayes' theorem $\mathrm{prec}(b)=r
 (\ref{eq:baserate}): at the operating point of sensitivity $0.14$ at FPR$1\%$ and a real prevalence of
 $1{:}10^4$, each detected attack comes with $\sim\!700$ false alarms (Tab.~\ref{tab:baserate}), about three orders
 of magnitude above the threshold of \citet{ho2019detecting} ($<\!4$/million). The consequence is that at a real
-prevalence our detectors, and any detector with a similar ROC curve, are triage and ranking tools rather than an
-autonomous defense; the contribution lies in the signal, the mechanism, and the methodology.
+prevalence our detectors, and any detector with a similar ROC curve, are triage and ranking tools, so the contribution lies in the signal, the mechanism, and the methodology.
 \begin{equation}
 \mathrm{prec}(b) \;=\; \frac{r\,b}{r\,b + \alpha\,(1-b)}.
 \label{eq:baserate}
@@ -714,8 +711,8 @@ sensitivity to noise is the price of learning.}
 \label{tab:labelnoise}
 \end{table}
 
-\noindent\textbf{What counts as working.} An operational method is causally relational-temporal, vanishing under
+\noindent An operational method is causally relational-temporal, vanishing under
 shuffle controls; transferable across topologies by the predictivity probe; and measured at low FPR with
 explicit prevalence arithmetic. By this standard, $98\%$ on a mass benchmark says nothing about spear phishing.
-What counts is sensitivity to the residual $2\%$, with a stated floor (cold impersonation) and an explicit
+What counts is sensitivity to the targeted tail, with a stated floor (cold impersonation) and an explicit
 threshold still orders of magnitude away --- the gap the next section interprets.

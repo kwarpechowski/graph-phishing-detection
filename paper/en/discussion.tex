@@ -12,28 +12,27 @@ outline the practical implications, and state the limits.
 The two invariants are complementary responses to two disjoint modes of targeted attack
 (Sec.~\ref{sec:res-inv1},~\ref{sec:res-inv2}). The per-threat ablation makes the complementarity concrete: for
 new senders the signal is carried by OSINT and time is useless, and for compromises it is the reverse. This is
-why single approaches fail on the residual $2\%$ (a content filter, a contact graph, or a volumetric detector on
+why single approaches fail on the targeted tail (a content filter, a contact graph, or a volumetric detector on
 its own): each is blind to one of the two modes.
 
 A second result concerns the stealthy attacker. A volumetric detector in the spirit of COMPA
 \citep{stringhini2015thataint} assumes that a compromise shows up as a surge; when the attacker deliberately
 spreads the sends over time, the volumetric signal vanishes and its AUC drops below the random baseline. Cascade dynamics instead
-reads the recipient side, the wave-like signature among the neighbors, which the sender cannot hide. This agrees
+captures the recipient side, the wave-like signature among the neighbors, which the sender cannot hide. This agrees
 with Ho et al.\ \citep{ho2019detecting} that lateral phishing needs a signal beyond the content of a single
 message; we differ in locating that signal in the dynamics of the domain knowledge graph rather than in headers
 or relays.
 
 \subsection{Practical implications}
 The central finding from Sec.~\ref{sec:susceptibility} --- that the periphery, not the executives, is most
-exposed under a lateral threat --- runs counter to common practice and is the most concrete takeaway of the
-paper. Typical defense programs treat executives as the most exposed, yet for the lateral channel the opposite
-holds: the largest unaddressed margin lies on the periphery, the mid- and junior-level roles. The recommendation
+exposed under a lateral threat --- is the most concrete takeaway of the
+paper. For the lateral channel, the largest unaddressed margin lies on the periphery, the mid- and junior-level roles. The recommendation
 is two-part. First, awareness programs and hard controls, such as out-of-band verification for transfers, should
 cover the periphery and not only the top. Second, detection resources are worth directing where the domain
 knowledge graph is sparse, since that is where the residual margin is largest. For the cold impersonation
 channel no relational layer suffices ($\mathrm{Susc}\!\approx\!0.96$ regardless of rank), so here the graph must
 be combined with content and process controls, as the fusion experiment (Sec.~\ref{sec:res-content}) confirms.
-The domain knowledge graph is therefore a prioritization layer rather than a standalone product: it indicates
+The domain knowledge graph is therefore a prioritization layer, not a standalone product: it indicates
 who, and through which relationship, is most weakly protected.
 
 The result also bears on the human factor. Human susceptibility rises under time pressure and authority cues

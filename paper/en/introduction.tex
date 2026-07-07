@@ -11,15 +11,15 @@ in what context. This is spear phishing, and it is the residual that mass detect
 
 Phishing detection is often presented as an almost solved problem. Modern email filters, built on content and
 reputation, classify mass campaigns at $\sim$98\% accuracy on typical benchmarks
-\citep{birthriya2025detection,tan2020graph}. That number is misleading. The residual, spear phishing and BEC, drives a large share of financial losses
-\citep{cidon2019high,ho2019detecting} yet largely evades content-based methods. This residual $2\%$ is
+\citep{birthriya2025detection,tan2020graph}. That number is misleading, because the residual --- spear phishing and BEC --- drives a large share of financial losses
+\citep{cidon2019high,ho2019detecting} while largely evading content-based methods. This residual $2\%$ is
 the real problem.
 
-The gap that lets this residual $2\%$ through is not transient; it is structural. A targeted attack
+The gap that lets this residual $2\%$ through is structural rather than transient. A targeted attack
 succeeds by respecting the victim's domain knowledge: roles and hierarchy, business relationships, competencies,
 communication routines, project context. The attacker assembles that knowledge from OSINT
 \citep{dewan2014analyzing,brown2025web}, and language models lower its cost \citep{bethany2024evaluating}.
-Maliciousness is determined by who sent a message and in what context, not by its wording. The detection signal must
+Maliciousness is determined by who sent a message and in what context, and the wording is incidental. The detection signal must
 therefore lie beyond the content, in the structure of relationships and the dynamics of their violation.
 
 Our thesis is that spear phishing is a violation of domain knowledge. An organization's domain knowledge can be modeled
@@ -48,7 +48,7 @@ questions, each paired with a measurable sub-thesis.
   a realistic base rate the detectors serve as a triage instrument rather than an autonomous defense.
 \end{description}
 \noindent The aim is to show that the two invariants carry a causal, transferable signal and to mark where it
-stops being operationally useful, rather than to deliver a deployable filter. The
+stops being operationally useful. The
 learning models are off-the-shelf instruments throughout.
 
 To ensure measurement rigor, we focus on methodology to avoid a common pitfall: graph-based detectors are
@@ -59,7 +59,8 @@ evaluation and a predictivity probe. This approach tests whether the ranking of 
 topologies, establishing a strict standard for what effectiveness means for residual spear phishing. The
 learning models we employ, a temporal graph network and gradient boosting, serve as measurement
 instruments to quantify the two invariants; the paper contributes a way of framing and measuring targeted
-attacks rather than a new machine-learning architecture.
+attacks; the paper contributes a way of framing and measuring targeted
+attacks, not a new machine-learning architecture.
 
 Our contributions map onto the research questions as follows.
 \begin{enumerate}[noitemsep,topsep=2pt]

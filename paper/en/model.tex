@@ -9,9 +9,7 @@
 The model is deliberately dry: symbols and relations only, no concrete values. Every quantity here is a
 variable; the numbers that instantiate it (population size, number of layers, time resolution, weights) are
 deferred to the Case Study (Sec.~\ref{sec:results}), so the model reads as a specification and the Case Study
-as one realization of it. Table~\ref{tab:notation} collects the symbols, and Figure~\ref{fig:model} traces the
-model from general to detailed: an organization induces a multiplex domain knowledge graph, whose two
-invariants feed two detectors, judged by one definition of effectiveness and read off as susceptibility.
+as one realization of it.
 
 \begin{figure}[t]\centering
 \resizebox{0.98\columnwidth}{!}{%
@@ -89,7 +87,7 @@ competencies, routines, and public footprints they have. It is modeled as a mult
 accounts with many types of relation stacked over it, each graph recording one kind of fact: who emails whom,
 who shares a skill, who is active when. A real relationship appears on many of these graphs at once; a forged or
 hijacked one appears on some but contradicts others. Everything that follows, both detectors and the
-susceptibility measure, reads that agreement or disagreement across the stack, which is why we first pin down
+susceptibility measure, captures that agreement or disagreement across the stack, so we first pin down
 $\mathcal{G}$ and the two numbers that summarize a sender--victim pair, $C$ and $tc$.
 
 \begin{definition}[Domain knowledge graph]
@@ -130,17 +128,17 @@ the two detection invariants below make this precise.
 A single formalism covers both lateral/BEC and external impersonation, so one model and one detector family
 suffice for both.
 
-\smallskip\noindent\textbf{Attacker goal.} Deliver to victim $v$ a message classified as legitimate. Two variants
+\smallskip The attacker's goal is to deliver to victim $v$ a message classified as legitimate. Two variants
 follow the same formalism. In lateral/BEC the sender $s$ is a compromised internal account, a known contact of
 $v$ writing outside its rhythm: coverage $C(s,v)$ is high yet $tc(s,v,t)=0$. In external impersonation, $s$
 impersonates a role or authority, giving the impression of a high $C$ while lacking real coverage in some of the
 layers (low structural consistency), possibly fabricating OSINT edges. In both cases the spear phisher respects the domain knowledge --- which lends the content its credibility ---
 but cannot reproduce it in full, and that inconsistency is the signal.
 
-\smallskip\noindent\textbf{Capabilities and scope.} On compromise the attacker gains mailbox access and so knows
+\smallskip On capabilities and scope: on compromise the attacker gains mailbox access and so knows
 the rhythm, making rhythm mimicry possible; fabricating OSINT footprints is cheap but does not create multilayer
 consistency. Out of scope is an adaptive adversary with full knowledge of the graph and training poisoning; we
-treat the signal as a cost increase for the attacker rather than an ultimate defense.
+treat the signal as a cost increase for the attacker, acknowledging no detection is final.
 
 \subsection{Two detection invariants}
 \label{sec:invariants}
@@ -149,15 +147,15 @@ to one attack mode, and their complementarity is the structural reason a single 
 residual $2\%$, which is what the Case Study tests in
 Sec.~\ref{sec:res-inv1} and~\ref{sec:res-inv2}.
 
-\smallskip\noindent\textbf{(I) Cross-layer inconsistency (static).} A legitimate new sender sits outside the
+\smallskip In the static case, a legitimate new sender sits outside the
 contacts layer but on an OSINT layer, such as a shared list or affiliation, and that consistency justifies them.
 A compromised account sits on the contacts layer but outside the rhythm, and that inconsistency betrays it. The
-detector reads the vector of layer membership and its (in)consistency, not the content.
+detector operates on the vector of layer membership and its (in)consistency, leaving content aside.
 
-\smallskip\noindent\textbf{(II) Cascade dynamics (temporal).} Lateral phishing is a propagation process: a
+\smallskip In the temporal case, lateral phishing is a propagation process: a
 compromised account sends to contacts, and from them to the next ones. A single message looks locally normal, but
 the wave leaves a receiving-side signature, an atypical pattern of who in the victim's neighborhood was hit within
-the window. A learned temporal model with node memory reads this pattern, scoring an event using the state from
+the window. A learned temporal model with node memory captures this pattern, scoring an event using the state from
 before its bucket, without label leakage (made precise in Sec.~\ref{sec:method}).
 
 \smallskip
@@ -189,7 +187,7 @@ where $\mathcal{A}(v)$ is the set of \emph{plausible} impersonating senders of $
 e.g.\ an authority or a cross-departmental bridge).
 \end{definition}
 
-\noindent A node is susceptible when there exists a credible yet hard-to-detect attack against it, which is why
+\noindent A node is susceptible when there exists a credible yet hard-to-detect attack against it; consequently
 the definition takes the $\max$ over plausible senders and the $1-\Pr[\text{detect}]$ term. We do not enumerate
 $\mathcal{A}(v)$ exhaustively; instead we correlate $\mathrm{Susc}(v)$ with graph-position features (authority
 and centrality, number of cross-community bridges, rhythm regularity, OSINT coverage) and report which of them
@@ -201,7 +199,7 @@ reinforced control, independently of the detector.
 Every result in the Case Study is held to a standard that is detector-independent and operational; the
 Methodology (Sec.~\ref{sec:method}) is the protocol enforcing it.
 
-The usual claim of high accuracy on a benchmark is the one we distrust.
+A high benchmark accuracy alone does not attest to detecting spear phishing.
 
 A method works operationally for residual spear phishing when its advantage is causally relational-temporal,
 vanishing under shuffle controls that destroy the relational or temporal signal, and transferable, so that the

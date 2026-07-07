@@ -27,19 +27,19 @@ Spear phishing draws its credibility from \emph{domain knowledge} built on open-
 Automated harvesting of such traces has been studied since early work \citep{edwards2017panning}. Yet \citet{dewan2014analyzing}
 found that raw social and OSINT features added \emph{little} beyond content and URLs
 \citep{dewan2014analyzing,dewan2017facebook}, a caution we take seriously: OSINT helps as a \emph{relation
-constructor}, a shared list or affiliation, not as a flat feature. Language models then drastically lower the
+constructor}, a shared list or affiliation, and treating it as a flat feature is a known pitfall. Language models then drastically lower the
 cost of personalization. Automated spear-phishing campaigns match human experts in human-subject studies
 \citep{bethany2024evaluating}, and realistic OSINT traces can be generated synthetically without subjects
 \citep{brown2025web}. The battleground shifts from \emph{style} to \emph{structure}: once content can be
-generated perfectly, the defense must read relations.
+generated perfectly, the defense must exploit relations.
 
 \subsection{Human and organizational susceptibility}
 \label{sec:rw-suscept}
-The human factor explains why the residual $2\%$ is so effective. Susceptibility to spear phishing depends on
+The human factor explains why this hard-to-detect tail is so effective. Susceptibility to spear phishing depends on
 personality traits and context \citep{halevi2015spearphishing}, and time pressure together with persuasion cues
 (authority, urgency) reduces detectability \citep{butavicius2022why}. Awareness, decision style, and knowledge
 moderate detection ability \citep{sturman2025security}. The implication for technical defense is significant:
-since susceptibility is a function of \emph{role, relation, and context}, then (a)~a content filter is
+because susceptibility is a function of \emph{role, relation, and context}, (a)~a content filter is
 insufficient, and (b)~it can be \emph{measured} structurally, which we do via an organizational
 susceptibility metric (Section~\ref{sec:susceptibility}).
 
@@ -77,7 +77,7 @@ and transactional fraud \citep{weber2019antimoney,li2022ttagn,rayana2015collecti
 literature \citep{ding2019deep,park2020unsupervised,liu2021anomaly,ma2021comprehensive,zhang2021mcgc} ---
 including the multiplex setting \citep{li2025umgad} --- as well as predicting user dynamics and roles
 \citep{kumar2019predicting,wu2020who,li2022pdgnn,mcauley2015image} provides techniques, yet operates on graphs of
-\emph{transactions/reviews}, not \emph{communication with domain knowledge}.
+\emph{transactions/reviews} and has yet to address \emph{communication with domain knowledge}.
 
 Since an attacker can \emph{fabricate} edges
 (our fabrication sweep), the literature on graph structure attacks
@@ -109,7 +109,7 @@ whether it is an artifact of the generator. We use the same standard to define a
 \subsection{Gaps and positioning of the work}
 \label{sec:rw-gap}
 Three gaps emerge from the review. Spear phishing detection remains dominated by the content signal, while the
-residual $2\%$ bypasses it by definition, with no unified relational treatment for lateral/BEC and external
+the targeted tail bypasses it by definition, with no unified relational treatment for lateral/BEC and external
 impersonation. Graph approaches target the web and transactions rather than the domain knowledge graph of
 communication, and organizational susceptibility is not measured structurally. Finally, evaluations rarely control for leaks or test transfer across topologies, so effectiveness tends to be
 ill-defined. The present work
