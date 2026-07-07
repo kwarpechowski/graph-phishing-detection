@@ -107,14 +107,14 @@ overlap (redundancy, \ref{sec:res-inv1}); the temporal consistency layer carries
 \label{tab:layers}
 \end{table}
 
-For Invariant~II, we set the temporal layer and cascade parameters by dividing the week into $T{=}28$ buckets
+We divide the week into $T{=}28$ buckets
 (7~days $\times$ 4~six-hour blocks); an account's rhythm $\tau$ is the set of its active buckets ($6$ per persona
 synthetically; on Enron derived from the \texttt{Date} headers). Realistic noise: $15\%$ of legitimate mail
 arrives off-rhythm and $25\%$ of attacks mimic the rhythm. For the cascade (Sec.~\ref{sec:m-detectors}) the
 per-contact infection probability is $p_\mathrm{inf}{=}0.6$ and the maximum depth is $H{=}4$. Detector
 hyperparameters are fixed uniformly (Tab.~\ref{tab:hparams}).
 
-For the attack scenarios and simulation budget, beyond the default cascade we probe four \emph{extreme}
+Beyond the default cascade we probe four \emph{extreme}
 scenarios, each chosen to stress a specific claim rather than to represent typical traffic. \emph{(i)~Naive
 blast}: one carrier infects all contacts at once --- the easy case that \emph{volume} detection should win,
 included as a sanity ceiling. \emph{(ii)~Stealthy spread} ($K$~carriers, one send per interval, down to $K{=}1$):
@@ -171,8 +171,7 @@ sensitivity@FPR$1\%$, on a victim/organization split, over $\ge\!20$~seeds, with
 % ============================================================
 \subsection{Invariant~I: cross-layer inconsistency}
 \label{sec:res-inv1}
-This subsection tests sub-thesis~T1 (RQ1): whether fusing the domain-knowledge layers separates targeted attacks
-from legitimate new senders better than a plain contacts graph, and whether the gain reflects real cross-layer
+Fusing the domain-knowledge layers separates targeted attacks from legitimate new senders, provided the gain reflects real cross-layer
 structure rather than added feature capacity.
 
 In the multiplex vs single graph comparison, the contacts-only detector is compared with the static multiplex
@@ -540,7 +539,7 @@ to zero, the multiplex advantage rises.}
 \label{fig:enronaudit}
 \end{figure}
 
-For Invariant~II on the real Enron topology, repeating the cascade experiment on the real graph
+Repeating the cascade experiment on the real graph
 ($1990$~accounts, $8$~seeds, leak-free) reproduces the hierarchy from the synthetic data (Tab.~\ref{tab:enron-casc},
 Fig.~\ref{fig:enron-casc}): 1-hop $0.65$, manual $0.77$, temporal GNN $0.85$ (beating manual in $8/8$~seeds),
 with time shuffling leveling it to the manual result ($0.77$). The advantage is causally temporal on the real
@@ -569,7 +568,7 @@ with the manual.}
 \label{fig:enron-casc}
 \end{figure}
 
-For transfer to two further SNAP graphs, on \texttt{email-Eu-core} \citep{paranjape2017motifs} and
+On \texttt{email-Eu-core} \citep{paranjape2017motifs} and
 \texttt{CollegeMsg} \citep{panzarasa2009patterns} (\citep{leskovec2014snap}) the regime transition replicates
 (Tab.~\ref{tab:realgraphs}, Fig.~\ref{fig:realgraphs}): against the naive blast the volume detector dominates
 ($0.97$), but against a stealthy attacker it breaks down ($0.70$/$0.66$) while the temporal GNN holds
@@ -665,7 +664,7 @@ receiving-side signal holds.}
 \label{fig:fpr}
 \end{figure}
 
-On base rate, sensitivity at a given FPR is independent of prevalence, but
+Sensitivity at a given FPR is independent of prevalence, but
 precision drops when the attack is rare. From Bayes' theorem $\mathrm{prec}(b)=rb/(rb+\alpha(1-b))$
 (\ref{eq:baserate}): at the operating point of sensitivity $0.14$ at FPR$1\%$ and a real prevalence of
 $1{:}10^4$, each detected attack comes with $\sim\!700$ false alarms (Tab.~\ref{tab:baserate}), about three orders
@@ -694,7 +693,7 @@ FPR$1\%$). Precision follows from the ROC curve, independently of the model.}
 \label{tab:baserate}
 \end{table}
 
-On label noise, flipping an increasing fraction of training labels
+Flipping an increasing fraction of training labels
 (Tab.~\ref{tab:labelnoise}), the learned GNN degrades fastest (temporal $0.82\!\to\!0.70$ at $20\%$ noise, volume
 only $0.79\!\to\!0.75$), so under realistic label noise the advantage of the learned model shrinks. This is
 another boundary we state explicitly.

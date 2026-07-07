@@ -22,7 +22,7 @@ topologies and reads off susceptibility (Def.~\ref{def:susc}).
 
 \subsection{Leak-aware evaluation protocol}
 \label{sec:eval}
-Graph detectors are easy to inflate, which is why the protocol below guards against inflated results.
+Graph detectors are easy to inflate; the protocol below enforces four safeguards against that.
 
 The protocol enforces four requirements. A matched design makes legitimate traffic and attack edges share the same
 distribution of endpoints and degrees, so they differ only by the relational-temporal pattern and the
