@@ -48,13 +48,13 @@ susceptibility metric (Section~\ref{sec:susceptibility}).
 The two invariants rest on a mature apparatus of graph learning, organized here into six threads that indicate
 what we borrow and what is missing for a \emph{domain knowledge graph} of email.
 
-\paragraph{Foundations and inductive learning.} Modern graph networks learn node representations through
+On the foundations of inductive learning, modern graph networks learn node representations through
 neighborhood aggregation: the \emph{inductive} GraphSAGE \citep{hamilton2017inductive} (generalization to nodes
 unseen during training) and the attention-based GAT \citep{velickovic2018graph} establish the paradigm; our \emph{structural} (rather than identity-based) node features are a deliberately
 lightweight variant of it, to preserve inductive generalization \citep{xu2020inductive,hao2020inductive}. Link-prediction and scalable-embedding tasks
 \citep{zhang2018link,zhang2018scalable} provide heads for classifying $(s\!\to\!v)$ events.
 
-\paragraph{Multilayer and heterogeneous networks.} The formalism for fusing multiple relations over \emph{one}
+For multilayer and heterogeneous networks, the formalism for fusing multiple relations over \emph{one}
 set of accounts is the \emph{multiplex} network
 \citep{kivela2014multilayer,dedomenico2013mathematical,magnani2013combinatorial,jeude2019multilayer}.
 Heterogeneous GNNs learn to fuse relation types: HAN \citep{wang2019heterogeneous}, HGT \citep{hu2020heterogeneous},
@@ -62,14 +62,14 @@ MAGNN \citep{fu2020magnn}, and attributed-network embedding \citep{christophides
 This provides the machinery for joining layers, yet \emph{cross-layer (in)consistency as a security signal}
 has not been operationalized for corporate email.
 
-\paragraph{Temporal dynamics.} The second invariant requires a model of time. The memory-based TGN
+On temporal dynamics, the second invariant requires a model of time. The memory-based TGN
 \citep{rossi2020temporal}, the attention-based DySAT \citep{sankar2020dysat}, EvolveGCN \citep{pareja2020evolvegcn},
 ROLAND \citep{you2022roland}, and streaming and spatio-temporal GNNs
 \citep{yu2023streaming,wang2022tsgn,nayebi2025spatiotemporal,behrouz2022anomaly} capture graph evolution. Our
 TGN-lite is a minimal realization of this paradigm by design, so that the time-shuffle control isolates the
 \emph{mechanism} rather than the capacity of the architecture.
 
-\paragraph{Fraud and anomaly detection on graphs.} The closest apparatus comes from fraud detection robust to
+In fraud and anomaly detection on graphs, the closest apparatus comes from fraud detection robust to
 \emph{camouflage} and \emph{class imbalance}: CARE-GNN \citep{dou2020enhancing}, GraphConsis \citep{liu2020alleviating},
 PC-GNN \citep{liu2021pick}, H2-FDetector \citep{shi2022h2fdetector}, GraphSMOTE \citep{zhao2021graphsmote},
 distribution-shift correction \citep{gao2023alleviating,tang2022rethinking}, and the detection of money laundering
@@ -79,14 +79,14 @@ including the multiplex setting \citep{li2025umgad} --- as well as predicting us
 \citep{kumar2019predicting,wu2020who,li2022pdgnn,mcauley2015image} provides techniques, yet operates on graphs of
 \emph{transactions/reviews}, not \emph{communication with domain knowledge}.
 
-\paragraph{Adversarial robustness and self-supervised learning.} Since an attacker can \emph{fabricate} edges
+On adversarial robustness and self-supervised learning, since an attacker can \emph{fabricate} edges
 (our fabrication sweep), the literature on graph structure attacks
 \citep{zugner2018adversarial,zugner2019adversarial,dai2022towards} and defenses
 \citep{zhang2020gnnguard,jin2020graph,cai2021structural,wang2023label} is relevant. Contrastive and
 self-supervised learning \citep{hassani2020contrastive,wang2021selfsupervised,singh2024node,yan2024topological}
 offers a label-free signal, relevant given the absence of real BEC labels.
 
-\paragraph{Graphs in security: phishing and threat intelligence.} Graph-based phishing detection has so far
+In security applications of graphs, including phishing and threat intelligence, graph-based phishing detection has so far
 targeted mainly \emph{web pages} and \emph{transactions}: graph-theoretic and visual approaches for web pages
 \citep{tan2020graph,lin2021phishpedia,abdelnabi2020visualphishnet}, attention over the email graph
 \citep{safran2025phishinggnn}, edge-feature GraphSAGE \citep{lo2021egraphsage}, propagation over URL--IP graphs

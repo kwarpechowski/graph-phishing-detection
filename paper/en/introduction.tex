@@ -15,14 +15,14 @@ reputation, classify mass campaigns at $\sim$98\% accuracy on typical benchmarks
 \citep{cidon2019high,ho2019detecting} yet largely evades content-based methods. This residual $2\%$ is
 the real problem.
 
-\paragraph{Why the residual $2\%$ gets through.} The gap is not transient; it is structural. A targeted attack
+The gap that lets this residual $2\%$ through is not transient; it is structural. A targeted attack
 succeeds by respecting the victim's domain knowledge: roles and hierarchy, business relationships, competencies,
 communication routines, project context. The attacker assembles that knowledge from OSINT
 \citep{dewan2014analyzing,brown2025web}, and language models lower its cost \citep{bethany2024evaluating}.
 Maliciousness is determined by who sent a message and in what context, not by its wording. The detection signal must
 therefore lie beyond the content, in the structure of relationships and the dynamics of their violation.
 
-\paragraph{Thesis: spear phishing violates domain knowledge.} An organization's domain knowledge can be modeled
+Our thesis is that spear phishing is a violation of domain knowledge. An organization's domain knowledge can be modeled
 as a multiplex graph of relations over its accounts: contacts, collaboration, competencies, OSINT traces,
 temporal rhythm. A targeted attack breaks this structure. It manifests through two invariants no content filter
 can see. Cross-layer inconsistency is the first: a genuine relation is consistent across many layers at once,
@@ -33,7 +33,7 @@ a wave-like signature on the receiving side that no single message reveals. Toge
 both modes of targeted attack: lateral/BEC from a compromised internal account, and external impersonation
 of a role or authority.
 
-\paragraph{Research questions and sub-theses.} We make the thesis testable by splitting it into three research
+We make the thesis testable by splitting it into three research
 questions, each paired with a measurable sub-thesis.
 \begin{description}[leftmargin=1.4em,noitemsep,topsep=2pt]
   \item[RQ1 (static signal).] Does cross-layer inconsistency separate targeted attacks from legitimate new
@@ -51,7 +51,7 @@ questions, each paired with a measurable sub-thesis.
 stops being operationally useful, rather than to deliver a deployable filter. The
 learning models are off-the-shelf instruments throughout.
 
-\paragraph{Measurement rigor.} We focus on methodology to avoid a common pitfall: graph-based detectors are
+To ensure measurement rigor, we focus on methodology to avoid a common pitfall: graph-based detectors are
 easy to inflate. Real-world anchors often leak rhythm, degree, and community alignment with labels, and
 synthetic generators can favor certain model classes. To counter this, we follow the caution of
 \citet{arp2022dos} and the TESSERACT protocol \citep{pendlebury2019tesseract}, adopting a leak-aware
@@ -61,7 +61,7 @@ learning models we employ, a temporal graph network and gradient boosting, serve
 instruments to quantify the two invariants; the paper contributes a way of framing and measuring targeted
 attacks rather than a new machine-learning architecture.
 
-\paragraph{Contributions.} The contributions map onto the research questions as follows.
+Our contributions map onto the research questions as follows.
 \begin{enumerate}[noitemsep,topsep=2pt]
   \item The notion and formalization of the domain knowledge graph, and the thesis that spear phishing is its
   violation, uniformly for lateral/BEC and external impersonation (the Model, Section~\ref{sec:model}); the
@@ -74,6 +74,6 @@ attacks rather than a new machine-learning architecture.
   limits stated explicitly: FPR, base rate, and adversarial cost (RQ3; T3).
 \end{enumerate}
 
-\paragraph{Organization.} Related work (Sec.~\ref{sec:related}) precedes the model
+The rest of the paper is organized as follows. Related work (Sec.~\ref{sec:related}) precedes the model
 (Sec.~\ref{sec:model}), methodology (Sec.~\ref{sec:method}), and the case study with results
 (Sec.~\ref{sec:results}); the discussion (Sec.~\ref{sec:discussion}) follows.
