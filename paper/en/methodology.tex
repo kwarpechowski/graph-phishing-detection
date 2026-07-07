@@ -6,26 +6,31 @@
 \section{Methodology}
 \label{sec:method}
 
-Having fixed the model (Sec.~\ref{sec:model}), we now describe how we test it: the procedure that turns the two
-invariants into detectors, the protocol that guards against inflated results, and the metrics against which the
-definition of effectiveness (Sec.~\ref{sec:effectiveness}) is checked. Throughout we keep the description at the
-level of a procedure with free parameters; the concrete values that instantiate it (the population, the number of
-layers and time buckets, the cascade parameters, the hyperparameters) are stated once, in the Case Study
-(Sec.~\ref{sec:results}).
+The procedure turns the two invariants into detectors, guards against inflated results, and checks the
+metrics against the definition of effectiveness (Sec.~\ref{sec:effectiveness}). Concrete values that instantiate
+it (population, number of layers and time buckets, cascade parameters, hyperparameters) are stated once, in the
+Case Study (Sec.~\ref{sec:results}).
 
 \subsection{Overview of the verification procedure}
 \label{sec:m-overview}
-The procedure has four steps that mirror the model. (1)~We instantiate the domain knowledge graph $\mathcal{G}$
-(Def.~\ref{def:dkg}) on a population, deriving the relation layers $\mathcal{L}$ and the temporal rhythm $\tau$.
-(2)~We build the two detectors, one per invariant (Sec.~\ref{sec:invariants}), as off-the-shelf learning
-instruments over graph-position features. (3)~We evaluate them under the leak-aware protocol below, so that any
-advantage due to leakage or capacity is destroyed by a control. (4)~We check transfer to real topologies and read
-off susceptibility (Def.~\ref{def:susc}). Each step is detailed next.
+This subsection maps the four steps of the verification, from instantiating $\mathcal{G}$ to reading off
+susceptibility, so that the reader knows where each later subsection fits. Each step is detailed in the
+subsections that follow.
+
+The procedure has four steps that mirror the model. First, instantiate the domain knowledge graph
+$\mathcal{G}$ (Def.~\ref{def:dkg}) on a population, deriving the relation layers $\mathcal{L}$ and the temporal
+rhythm $\tau$. Then build the two detectors, one per invariant (Sec.~\ref{sec:invariants}), as off-the-shelf
+learning instruments over graph-position features. Evaluation follows under the leak-aware protocol below, so
+that any advantage due to leakage or capacity is destroyed by a control; the last step checks transfer to real
+topologies and reads off susceptibility (Def.~\ref{def:susc}).
 
 \subsection{Leak-aware evaluation protocol}
 \label{sec:eval}
-Rigorous evaluation here is a contribution, not a formality, because graph detectors are easy to inflate. The
-protocol enforces four requirements. A matched design makes legitimate traffic and attack edges share the same
+Graph detectors are easy to inflate, so rigorous evaluation here is a contribution, not a formality. This
+subsection defines the four requirements that guard against inflated results; the Methodology subsections that
+follow are the concrete realization of each.
+
+The protocol enforces four requirements. A matched design makes legitimate traffic and attack edges share the same
 distribution of endpoints and degrees, so they differ only by the relational-temporal pattern and the
 degree/identity confounder is removed \citep{arp2022dos}. Leak control adds a temporal split of the rhythm
 estimate, an audit of the fraction of out-of-rhythm mail, and a control that shuffles temporal order, each of
@@ -37,8 +42,8 @@ its advantage is causally relational-temporal, vanishing under controls, and tra
 
 \subsection{Detectors and causal controls}
 \label{sec:m-detectors}
-This subsection turns the two invariants into concrete detectors and states the controls that isolate their
-signal. The design principle is uniform: features encode graph position and timing, never identity, so every
+This subsection turns the two invariants into concrete detectors and pairs each with the control that isolates
+its signal. The design principle is uniform: features encode graph position and timing, never identity, so every
 detector is inductive and applies to accounts unseen in training.
 
 \smallskip\noindent\textbf{Invariant~I (cross-layer).} For a sender--victim pair we compare three feature sets of
@@ -51,17 +56,15 @@ $G=(V,E)$ with time divided into $T$ buckets. An attack is a cascade: a patient-
 to contacts; each recipient becomes a carrier with probability $p_\mathrm{inf}$ and propagates to depth $H$
 (Fig.~\ref{fig:cascade}). A single event $u\!\to\!v$ is locally indistinguishable from legitimate mail; the
 signal is the cascade context, since within the wave's window many of $v$'s neighbors receive mail and $u$ was
-hit just before. We compare four detectors of increasing temporal awareness: a 1-hop tabular model (a lower
+hit just before. Four detectors of increasing temporal awareness are compared: a 1-hop tabular model (a lower
 bound), a hand-crafted cascade context (1-hop plus burst, freshness, and wave density), a static GNN (topology,
 no time), and a temporal GNN with node memory.
 
-\smallskip\noindent\emph{Intuition before the equations.} The two equations below differ in one thing only:
-\emph{whether the model may look forward in time}. The static score (Eq.~\eqref{eq:static}) summarizes a node by
-its neighbors in the whole aggregated graph, seeing who is connected to whom but not in what order. The temporal
-score (Eq.~\eqref{eq:temp-score}) instead keeps a running memory $m_v^{(b)}$ that is updated bucket by bucket and
-read one bucket before the event it scores, so it can only use the past. That past-only reading is what lets the
-receiving-side wave become a signal, and it is also what a time-shuffle destroys, so the control below measures
-the temporal signal and nothing else.
+\smallskip\noindent\emph{Intuition.} The two equations below differ in one thing only: whether the model may
+look forward in time. The static score summarizes a node by its neighbors in the whole aggregated graph, seeing
+who is connected to whom but not in what order. The temporal score instead keeps a running memory updated
+bucket by bucket and read one bucket before the event it scores, so it can only use the past. That past-only
+reading is what lets the receiving-side wave become a signal, and it is also what a time-shuffle destroys.
 
 \smallskip\noindent Formally, the static GNN builds embeddings from the aggregated graph with a normalized
 adjacency $\hat{A}$ and features $X$,
@@ -128,10 +131,14 @@ temporal} propagation context.}
 
 \subsection{Event model and data split}
 \label{sec:m-events}
+This subsection defines what counts as a single observation and how the data is split for training and
+evaluation. The event model is the bridge between the abstract invariants and the concrete experiments in the
+Case Study.
+
 An event is a pair (sender $s$, victim $v$) with a bucket $b$, labeled legitimate or attack, with two-sided noise
 so that the classes are not perfectly separable. Legitimate events are of three kinds: known (a contact, in
 rhythm), new-OSINT (outside contacts but on an OSINT layer), and cold (outside all layers, an irreducible source
-of false positives). Attacks are either BEC from outside the graph (outside everything and off-rhythm) or a
+of false positives). Attacks are either BEC from outside the graph (outside all layers and off-rhythm) or a
 compromised account (a known contact off-rhythm). We use two split regimes, victim-wise (disjoint victim sets) and
 organization-wise (test organizations disjoint from training ones, an inductive validation). Headline claims are
 hardened over many seeds; validations on real graphs use fewer seeds, since variance is lower on a fixed
@@ -139,13 +146,16 @@ structure, with a Wilcoxon test where significance matters. The exact seed count
 
 \subsection{Metrics, base rate, and threats to validity}
 \label{sec:m-metrics}
+This subsection defines the metrics and the threats to validity that the Case Study reports against. It is
+where the definition of effectiveness (Sec.~\ref{sec:effectiveness}) meets concrete numbers.
+
 The headline metric is sensitivity at a fixed low FPR, the operational working point,
 $\text{sensitivity}@\mathrm{FPR} = \max\{\mathrm{TPR}(\theta):\mathrm{FPR}(\theta)\le\alpha\}$; AUC is reported
 alongside it. Real systems operate at a far stricter FPR ($<\!4$~FP/million, \citep{ho2019detecting}), so the FPR
-we report is a liberal lower bound rather than a deployment threshold; at a realistic prevalence, precision
-follows from Bayes' theorem, which we make explicit in the Case Study (Sec.~\ref{sec:res-rigor}). The causal
-controls are layer/rhythm shuffling for Invariant~I and temporal-order shuffling for Invariant~II: if the signal
-is structural-temporal, the control must destroy the advantage.
+reported here is a liberal lower bound rather than a deployment threshold; at a realistic prevalence, precision
+follows from Bayes' theorem, which we make explicit in the Case Study (Sec.~\ref{sec:res-rigor}). To isolate the
+signal we use causal controls: layer/rhythm shuffling for Invariant~I and temporal-order shuffling for
+Invariant~II. If the signal is truly structural-temporal, the control must destroy the advantage.
 
 \smallskip\noindent\textbf{Threats to validity.} The internal threats are layer redundancy, for which we measure
 Jaccard before any gain claim, and label leakage, which we counter by separating features from the hidden
