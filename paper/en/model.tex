@@ -10,8 +10,8 @@ The model formalizes an organization's domain knowledge as a multiplex graph and
 violation. All quantities here are variables; the numbers that instantiate them are stated in the
 Case Study (Sec.~\ref{sec:results}). Figure~\ref{fig:model} gives an overview.
 
-\begin{figure}[t]\centering
-\resizebox{0.98\columnwidth}{!}{%
+\begin{figure}[htbp]\centering
+\resizebox{0.98\textwidth}{!}{%
 \begin{tikzpicture}[>=Latex, font=\small, node distance=6mm,
   box/.style={draw, rounded corners=2pt, align=center, minimum height=8mm, inner sep=3pt, fill=blue!4},
   lay/.style={draw, align=center, minimum width=20mm, minimum height=6mm, inner sep=2pt, fill=blue!8},
@@ -32,7 +32,7 @@ Case Study (Sec.~\ref{sec:results}). Figure~\ref{fig:model} gives an overview.
   \node[box, right=12mm of d1, yshift=-8mm, fill=green!6] (eff) {Effectiveness\\{\scriptsize leak-aware, low-FPR\\(Sec.~\ref{sec:effectiveness})}};
   \node[box, below=10mm of eff, fill=green!6] (susc) {Susceptibility\\{\scriptsize $\mathrm{Susc}(v)$ (Def.~\ref{def:susc})}};
   % domain knowledge graph container (drawn without background layer -- \resizebox-safe)
-  \node[draw, dashed, rounded corners, fit=(l1)(l2)(l3), inner sep=4pt, label=above:{\footnotesize domain knowledge graph $\mathcal{G}$ (Def.~\ref{def:dkg})}] (dkg) {};
+  \node[draw, dashed, rounded corners, fit=(l1)(l2)(l3), inner sep=4pt, label=above:{\footnotesize domain knowledge graph $\mathcal{G}$ (Def.~\protect\ref{def:dkg})}] (dkg) {};
   % flows
   \draw[flow] (org) -- (dkg);
   \draw[flow] (l1.east) -- (i1.west);
