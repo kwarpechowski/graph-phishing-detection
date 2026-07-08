@@ -4,7 +4,7 @@
 \section{Introduction}
 \label{sec:intro}
 
-A request lands in the CFO's inbox: the ``CEO'' asks for an urgent transfer. The wording is polished and the pretext plausible, and nothing in the content betrays the deception \citep{butavicius2022why,sturman2025security}. Such attacks are increasingly effective. For instance, the FBI's IC3 reports that Business Email Compromise (BEC) caused adjusted losses of over \$2.9 billion in 2021 alone, often bypassing content filters because there is nothing wrong with the message, only with the sender and the context. This is spear phishing, which is the residual that mass detection never reaches.
+A request lands in the CFO's inbox: the ``CEO'' asks for an urgent transfer. The wording is polished and the pretext plausible, and nothing in the content betrays the deception \citep{butavicius2022why,sturman2025security}. Such attacks are increasingly effective. For instance, the FBI's IC3 reports that Business Email Compromise (BEC) caused adjusted losses of nearly \$2.4 billion in 2023 \citep{fbi2024ic3}, often bypassing content filters because there is nothing wrong with the message, only with the sender and the context. This is spear phishing, which is the residual that mass detection never reaches.
 
 Phishing detection is often presented as an almost solved problem. Modern email filters, built on content and
 reputation, classify mass campaigns at $\sim$98\% accuracy on typical benchmarks
@@ -45,12 +45,12 @@ questions, each paired with a measurable sub-thesis.
 \noindent The aim is to show that the two invariants carry a causal, transferable signal and to mark where it
 stops being operationally useful. The learning models are standard tools throughout.
 
-To ensure measurement rigor, we focus on methodology to avoid a common pitfall: graph-based detectors are
+For measurement rigor, we focus on methodology to avoid a common pitfall: graph-based detectors are
 easy to inflate. Real-world anchors often leak rhythm, degree, and community alignment with labels, and
 synthetic generators can favor certain model classes. To counter this, we follow the caution of
 \citet{arp2022dos} and the TESSERACT protocol \citep{pendlebury2019tesseract}, adopting a leak-aware
 evaluation and a predictivity probe. This approach tests whether the ranking of methods transfers across
-topologies, established a rigorous standard for what effectiveness means for the targeted tail. The learning models we employ, a temporal graph network and gradient boosting, serve as measurement
+topologies, establishing a rigorous standard for what effectiveness means for the targeted tail. The learning models we employ, a temporal graph network and gradient boosting, serve as measurement
 tools to quantify the two invariants; the paper's contribution is a way of framing and measuring targeted
 attacks, not a new machine-learning architecture.
 

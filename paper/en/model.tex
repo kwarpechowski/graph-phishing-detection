@@ -6,6 +6,10 @@
 \section{Model}
 \label{sec:model}
 
+The model formalizes an organization's domain knowledge as a multiplex graph and defines two invariants of its
+violation. All quantities here are variables; the numbers that instantiate them are stated in the
+Case Study (Sec.~\ref{sec:results}). Figure~\ref{fig:model} gives an overview.
+
 \begin{figure}[t]\centering
 \resizebox{0.98\columnwidth}{!}{%
 \begin{tikzpicture}[>=Latex, font=\small, node distance=6mm,
@@ -88,7 +92,7 @@ $\mathcal{G}$ and the two numbers that summarize a sender--victim pair, $C$ and 
 \label{def:dkg}
 A domain knowledge graph is $\mathcal{G}=(V,\{E_L\}_{L\in\mathcal{L}},\{w_L\},\tau)$, where $V$ is the set of
 accounts (people/roles), $\mathcal{L}$ is the set of relation \emph{layers} over the \emph{same} $V$ (contacts,
-hierarchy, collaboration, and shared competencies/conferences/certificates, platforms, or routines (OSINT
+hierarchy, collaboration, and shared competencies/conferences/certificates, platforms, or routines; OSINT
 footprints from the persona fields \texttt{c3}--\texttt{c8}, defined in Sec.~\ref{sec:results}), $w_L\in(0,1]$ is the confidence weight of a layer, and
 $\tau:V\!\times\!V\!\to\!\mathcal{T}$ assigns to edges a \emph{temporal rhythm} (the sender's active windows).
 Each layer encodes \emph{one type} of domain fact; superimposed, they form the entire knowledge of ``what is
@@ -160,12 +164,6 @@ Beyond detection, the graph exposes who is most at risk. Susceptibility depends 
 graph, independent of any detector's tuning, and Sec.~\ref{sec:susceptibility} later measures it to answer
 RQ3.
 
-\noindent\emph{A node is susceptible when the most credible attack against it is also the hardest
-to detect.} The definition takes the maximum over plausible attackers and the complement of the detection
-probability, so a high score means there exists an attacker who both looks legitimate and slips through. We do
-not enumerate all such attackers; instead, Sec.~\ref{sec:susceptibility} correlates the score with
-graph-position features and reports which ones drive it.
-
 \begin{definition}[Susceptibility]
 \label{def:susc}
 The susceptibility of node $v$ is the expected \emph{detection uniqueness} of the best \emph{credible}
@@ -188,13 +186,13 @@ reinforced control, independently of the detector.
 \subsection{Definition of detection effectiveness}
 \label{sec:effectiveness}
 Every result in the Case Study follows a standard that is detector-independent and operational; the
-Methodology (Sec.~\ref{sec:method}) is the protocol that includes it.
+Methodology (Sec.~\ref{sec:method}) is the protocol that operationalizes it.
 
 A high benchmark accuracy alone does not attest to detecting spear phishing.
 
 A method works operationally for the targeted tail when its advantage is causally relational-temporal,
-vanishing under shuffle controls that destroy the relational or temporal signal, and transferable, ensuring that the
+vanishing under shuffle controls that destroy the relational or temporal signal, and transferable, so that the
 ranking of methods established on one topology carries over to another. Effectiveness is judged by sensitivity
 at a low false-positive rate with explicit base-rate accounting, rather than by headline AUC; $98\%$ on a mass benchmark
 does not attest to detecting spear phishing. This is what the leak-aware protocol of Sec.~\ref{sec:method}
-includes.
+implements.
