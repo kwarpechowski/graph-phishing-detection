@@ -66,7 +66,7 @@ The second invariant requires a model of time: the memory-based TGN
 \citep{rossi2020temporal}, the attention-based DySAT \citep{sankar2020dysat}, EvolveGCN \citep{pareja2020evolvegcn},
 ROLAND \citep{you2022roland}, and streaming and spatio-temporal GNNs
 \citep{yu2023streaming,wang2022tsgn,nayebi2025spatiotemporal,behrouz2022anomaly} capture graph evolution. Our
-TGN-lite is a minimal realization of this paradigm by design, so that the time-shuffle control isolates the
+TGN-lite is a minimal realization of this paradigm by design, allowing the time-shuffle control to isolate the
 \emph{mechanism} rather than the capacity of the architecture.
 
 The closest apparatus comes from fraud detection robust to
@@ -108,7 +108,7 @@ whether it is an artifact of the generator. We use the same standard to define a
 
 \subsection{Gaps and positioning of the work}
 \label{sec:rw-gap}
-Three gaps emerge from the review. Spear phishing detection remains dominated by the content signal, while the
+Three gaps emerge from the review. Spear phishing detection remains dominated by the content signal, while
 the targeted tail bypasses it by definition, with no unified relational treatment for lateral/BEC and external
 impersonation. Graph approaches target the web and transactions rather than the domain knowledge graph of
 communication, and organizational susceptibility is not measured structurally. Finally, evaluations rarely control for leaks or test transfer across topologies, so effectiveness tends to be

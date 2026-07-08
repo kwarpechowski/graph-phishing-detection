@@ -243,10 +243,10 @@ OSINT layers) is indispensable.}
 \label{fig:layersel}
 \end{figure}
 
-Layer redundancy is a topology artifact: the high correlation of the
+The high correlation of the
 structural layers (contacts$\approx$hierarchy$\approx$domain, Jaccard $\ge0.9$) stems from the generator, which
-gives one domain per company. Introducing a topology-decorrelation knob $\rho$ that rewires contacts from intra-
-to inter-company (Tab.~\ref{tab:topo}), we find that already at moderate decorrelation Jaccard drops to $0.39$
+gives one domain per company. This redundancy is a topology artifact. We introduce a topology-decorrelation knob $\rho$ that rewires contacts from intra-
+to inter-company (Tab.~\ref{tab:topo}), and find that already at moderate decorrelation Jaccard drops to $0.39$
 and the independent contribution of the structural layers rises to $0.25$ AUC. The ``effectively 3--4 layers''
 figure is thus a property of our compact population, not of the multiplex as a method.
 
@@ -287,10 +287,8 @@ at every noise rate and every $N$.}
 \label{fig:sensitivity}
 \end{figure}
 
-\noindent Multiplex fusion beats the single graph, eliminates new-sender false
-alarms, and the advantage vanishes after shuffling. Yet it sees only the new sender. A compromised account is
-already a genuine contact, consistent across every static layer, and to it Invariant~I is blind --- which is the
-question Invariant~II takes up.
+\noindent Invariant~I sees only the new sender. A compromised account is
+already a genuine contact, consistent across every static layer, and to it Invariant~I is blind --- the question Invariant~II takes up.
 
 % ============================================================
 \subsection{Invariant~II: temporal cascade dynamics}
@@ -333,7 +331,7 @@ time $\to$ hand-crafted window $\to$ learned dynamics. Last row: time-shuffle co
 The stealthy attacker breaks volume, but not dynamics: against an attacker who evades detection by
 spreading its sends over time ($K$~carriers, one per interval), the volume detector breaks down (AUC $0.72\!\to\!0.44$ at
 $K{=}1$, below random) because the sending burst disappears, while the temporal GNN holds (AUC $0.60$,
-sensitivity@FPR$1\%$ $0.039$ vs $0.017$) because it captures the receiving side of the cascade
+sensitivity@FPR$1\%$ $0.039$ vs $0.017$) because it picks up the receiving side of the cascade
 (Tab.~\ref{tab:stealth}, Fig.~\ref{fig:stealth}). Against the path-based baseline (Hopper, Tab.~\ref{tab:hopper})
 the path-based detector wins under extreme stealth but degrades with reach, and the temporal GNN is the only
 detector with no breakdown regime ($0.65$--$0.82$). One blind spot remains (Tab.~\ref{tab:blindspot}): a surgical
@@ -690,8 +688,8 @@ FPR$1\%$). Precision follows from the ROC curve, independently of the model.}
 \label{tab:baserate}
 \end{table}
 
-Flipping an increasing fraction of training labels
-(Tab.~\ref{tab:labelnoise}), the learned GNN degrades fastest (temporal $0.82\!\to\!0.70$ at $20\%$ noise, volume
+We flip an increasing fraction of training labels
+(Tab.~\ref{tab:labelnoise}), and find that the learned GNN degrades fastest (temporal $0.82\!\to\!0.70$ at $20\%$ noise, volume
 only $0.79\!\to\!0.75$), so under realistic label noise the advantage of the learned model shrinks. This is
 another boundary we state explicitly.
 

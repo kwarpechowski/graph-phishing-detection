@@ -87,7 +87,7 @@ competencies, routines, and public footprints they have. It is modeled as a mult
 accounts with many types of relation stacked over it, each graph recording one kind of fact: who emails whom,
 who shares a skill, who is active when. A real relationship appears on many of these graphs at once; a forged or
 hijacked one appears on some but contradicts others. Everything that follows, both detectors and the
-susceptibility measure, captures that agreement or disagreement across the stack, so we first pin down
+susceptibility measure, encodes that agreement or disagreement across the stack, so we first pin down
 $\mathcal{G}$ and the two numbers that summarize a sender--victim pair, $C$ and $tc$.
 
 \begin{definition}[Domain knowledge graph]
@@ -137,14 +137,14 @@ but cannot reproduce it in full, and that inconsistency is the signal.
 
 \smallskip On capabilities and scope: on compromise the attacker gains mailbox access and so knows
 the rhythm, making rhythm mimicry possible; fabricating OSINT footprints is cheap but does not create multilayer
-consistency. Out of scope is an adaptive adversary with full knowledge of the graph and training poisoning; we
-treat the signal as a cost increase for the attacker, acknowledging no detection is final.
+consistency. Out of scope is an adaptive adversary with full knowledge of the graph and training poisoning. We
+treat the signal as a cost increase for the attacker; no detection is final.
 
 \subsection{Two detection invariants}
 \label{sec:invariants}
 The threat model says the attack must break consistency somewhere. It can break in two places, each mapping
 to one attack mode, and their complementarity is the structural reason a single detector cannot cover the
-residual $2\%$, which is what the Case Study tests in
+the targeted tail, a focus of the Case Study in
 Sec.~\ref{sec:res-inv1} and~\ref{sec:res-inv2}.
 
 \smallskip In the static case, a legitimate new sender sits outside the
@@ -155,7 +155,7 @@ detector operates on the vector of layer membership and its (in)consistency, lea
 \smallskip In the temporal case, lateral phishing is a propagation process: a
 compromised account sends to contacts, and from them to the next ones. A single message looks locally normal, but
 the wave leaves a receiving-side signature, an atypical pattern of who in the victim's neighborhood was hit within
-the window. A learned temporal model with node memory captures this pattern, scoring an event using the state from
+the window. A learned temporal model with node memory registers this pattern, scoring an event using the state from
 before its bucket, without label leakage (made precise in Sec.~\ref{sec:method}).
 
 \smallskip
@@ -201,8 +201,8 @@ Methodology (Sec.~\ref{sec:method}) is the protocol enforcing it.
 
 A high benchmark accuracy alone does not attest to detecting spear phishing.
 
-A method works operationally for residual spear phishing when its advantage is causally relational-temporal,
-vanishing under shuffle controls that destroy the relational or temporal signal, and transferable, so that the
+A method works operationally for the targeted tail when its advantage is causally relational-temporal,
+vanishing under shuffle controls that destroy the relational or temporal signal, and transferable, ensuring that the
 ranking of methods established on one topology carries over to another. Effectiveness is judged by sensitivity
 at a low false-positive rate with explicit base-rate accounting, rather than by headline AUC; $98\%$ on a mass benchmark
 does not attest to detecting spear phishing. This is what the leak-aware protocol of Sec.~\ref{sec:method}

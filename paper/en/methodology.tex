@@ -82,10 +82,13 @@ measures the amount of temporal information the model used. This is the formal j
 control.
 
 \smallskip Beyond the GNN we implement two strong practical methods.
-A volumetric baseline in the spirit of COMPA \citep{egele2013compa,stringhini2015thataint} flags a sudden spike
-in a sender's volume within a short window (an \texttt{IsolationForest}), and a path-based baseline in the spirit
-of Hopper \citep{ho2021hopper} looks for a causal precursor, momentum, and a rare target. We implement their
-structural-temporal core rather than the full systems, which is why we label them ``volumetric'' and
+\begin{itemize}[noitemsep,topsep=2pt]
+  \item A volumetric baseline in the spirit of COMPA \citep{egele2013compa,stringhini2015thataint} flags a sudden spike
+  in a sender's volume within a short window (an \texttt{IsolationForest}),
+  \item and a path-based baseline in the spirit
+  of Hopper \citep{ho2021hopper} looks for a causal precursor, momentum, and a rare target.
+\end{itemize}
+We implement their structural-temporal core rather than the full systems, which is why we label them ``volumetric'' and
 ``path-based''. Hyperparameters of all detectors are fixed uniformly, without intensive tuning, so that no
 detector enjoys a tuning advantage; the concrete settings are given in the Case Study (Tab.~\ref{tab:hparams}).
 
@@ -124,8 +127,7 @@ temporal} propagation context.}
 
 \subsection{Event model and data split}
 \label{sec:m-events}
-An event is a pair (sender $s$, victim $v$) with a bucket $b$, labeled legitimate or attack, with two-sided noise
-so that the classes are not perfectly separable. Legitimate events are of three kinds: known (a contact, in
+An event is a pair (sender $s$, victim $v$) with a bucket $b$, labeled legitimate or attack, with two-sided noise to ensure the classes are not perfectly separable. Legitimate events are of three kinds: known (a contact, in
 rhythm), new-OSINT (outside contacts but on an OSINT layer), and cold (outside all layers, an irreducible source
 of false positives). Attacks are either BEC from outside the graph (outside all layers and off-rhythm) or a
 compromised account (a known contact off-rhythm). We use two split regimes, victim-wise (disjoint victim sets) and

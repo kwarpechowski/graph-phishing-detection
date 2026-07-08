@@ -11,11 +11,11 @@ in what context. This is spear phishing, and it is the residual that mass detect
 
 Phishing detection is often presented as an almost solved problem. Modern email filters, built on content and
 reputation, classify mass campaigns at $\sim$98\% accuracy on typical benchmarks
-\citep{birthriya2025detection,tan2020graph}. That number is misleading, because the residual --- spear phishing and BEC --- drives a large share of financial losses
-\citep{cidon2019high,ho2019detecting} while largely evading content-based methods. This residual $2\%$ is
-the real problem.
+\citep{birthriya2025detection,tan2020graph}. That number is misleading, as the residual --- spear phishing and BEC --- drives a large share of financial losses
+\citep{cidon2019high,ho2019detecting} while largely evading content-based methods; this residual $2\%$ represents
+the core of the problem.
 
-The gap that lets this residual $2\%$ through is structural rather than transient. A targeted attack
+The gap that lets this residual $2\%$ through is structural rather than transient, as a targeted attack
 succeeds by respecting the victim's domain knowledge: roles and hierarchy, business relationships, competencies,
 communication routines, project context. The attacker assembles that knowledge from OSINT
 \citep{dewan2014analyzing,brown2025web}, and language models lower its cost \citep{bethany2024evaluating}.
@@ -56,10 +56,9 @@ easy to inflate. Real-world anchors often leak rhythm, degree, and community ali
 synthetic generators can favor certain model classes. To counter this, we follow the caution of
 \citet{arp2022dos} and the TESSERACT protocol \citep{pendlebury2019tesseract}, adopting a leak-aware
 evaluation and a predictivity probe. This approach tests whether the ranking of methods transfers across
-topologies, establishing a strict standard for what effectiveness means for residual spear phishing. The
+topologies, establishing a strict standard for what effectiveness means for the targeted tail. The
 learning models we employ, a temporal graph network and gradient boosting, serve as measurement
-instruments to quantify the two invariants; the paper contributes a way of framing and measuring targeted
-attacks; the paper contributes a way of framing and measuring targeted
+instruments to quantify the two invariants; the paper's contribution is a way of framing and measuring targeted
 attacks, not a new machine-learning architecture.
 
 Our contributions map onto the research questions as follows.
