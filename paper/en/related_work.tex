@@ -10,16 +10,16 @@ content (\ref{sec:rw-graph}), and evaluation rigor (\ref{sec:rw-eval}), closing 
 
 \subsection{Spear phishing and BEC: why content is insufficient}
 \label{sec:rw-spear}
-Targeted attacks --- spear phishing, whaling, and Business Email Compromise --- differ from mass phishing in their
-personalization and context; a recent survey in \emph{Computers \& Security} systematizes the techniques and gaps
+Targeted attacks, such as spear phishing and whaling, alongside Business Email Compromise, differ from mass phishing in their personalization and context.
+A recent survey in \emph{Computers \& Security} systematizes the techniques and gaps
 of the area \citep{birthriya2025detection}. \citet{ho2019detecting} characterized lateral phishing from
 compromised accounts across $113$~million emails and fixed an operational low-FPR threshold of $<\!4$~FP/million.
 \citet{cidon2019high} targeted payload-free BEC in production, and BEC surveys trace its evolution and cost
 \citep{atlam2023business}. What the effective methods share is a departure from content: per-sender behavioral
 profiles \citep{gascon2018reading,stringhini2015thataint}, header and stylometry models
-\citep{duman2016emailprofiler}, and analysis of relay infrastructure \citep{luo2024characterizing} all catch mail
+\citep{duman2016emailprofiler}, as well as analysis of relay infrastructure \citep{luo2024characterizing} all catch mail
 from compromised legitimate accounts whose content reads as normal. In each case, maliciousness
-is determined by who sent a message and in what context rather than by what was written.
+is determined by the sender and the surrounding context rather than by what was written.
 
 \subsection{The knowledge-side attack: OSINT and language models}
 \label{sec:rw-attack}
@@ -30,16 +30,16 @@ found that raw social and OSINT features added \emph{little} beyond content and 
 constructor}, a shared list or affiliation, and treating it as a flat feature is a known pitfall. Language models then drastically lower the
 cost of personalization. Automated spear-phishing campaigns match human experts in human-subject studies
 \citep{bethany2024evaluating}, and realistic OSINT traces can be generated synthetically without subjects
-\citep{brown2025web}. The battleground shifts from \emph{style} to \emph{structure}: once content can be
-generated perfectly, the defense must exploit relations.
+\citep{brown2025web}. Once content can be
+generated perfectly, the defense must exploit relations rather than style.
 
 \subsection{Human and organizational susceptibility}
 \label{sec:rw-suscept}
 The human factor explains why this hard-to-detect tail is so effective. Susceptibility to spear phishing depends on
 personality traits and context \citep{halevi2015spearphishing}, and time pressure together with persuasion cues
-(authority, urgency) reduces detectability \citep{butavicius2022why}. Awareness, decision style, and knowledge
+(authority, urgency) reduces detectability \citep{butavicius2022why}. Awareness and decision style
 moderate detection ability \citep{sturman2025security}. The implication for technical defense is significant:
-because susceptibility is a function of \emph{role, relation, and context}, (a)~a content filter is
+because susceptibility is a function of \emph{role and relation, alongside context}, (a)~a content filter is
 insufficient, and (b)~it can be \emph{measured} structurally, which we do via an organizational
 susceptibility metric (Section~\ref{sec:susceptibility}).
 
@@ -74,8 +74,7 @@ The closest apparatus comes from fraud detection robust to
 PC-GNN \citep{liu2021pick}, H2-FDetector \citep{shi2022h2fdetector}, GraphSMOTE \citep{zhao2021graphsmote},
 distribution-shift correction \citep{gao2023alleviating,tang2022rethinking}, and the detection of money laundering
 and transactional fraud \citep{weber2019antimoney,li2022ttagn,rayana2015collective}. The broader graph-anomaly
-literature \citep{ding2019deep,park2020unsupervised,liu2021anomaly,ma2021comprehensive,zhang2021mcgc} ---
-including the multiplex setting \citep{li2025umgad} --- as well as predicting user dynamics and roles
+literature \citep{ding2019deep,park2020unsupervised,liu2021anomaly,ma2021comprehensive,zhang2021mcgc}, (including the multiplex setting \citep{li2025umgad}), as well as predicting user dynamics and roles
 \citep{kumar2019predicting,wu2020who,li2022pdgnn,mcauley2015image} provides techniques, yet operates on graphs of
 \emph{transactions/reviews} and has yet to address \emph{communication with domain knowledge}.
 
@@ -108,10 +107,10 @@ whether it is an artifact of the generator. We use the same standard to define a
 
 \subsection{Gaps and positioning of the work}
 \label{sec:rw-gap}
-Three gaps emerge from the review. Spear phishing detection remains dominated by the content signal, while
-the targeted tail bypasses it by definition, with no unified relational treatment for lateral/BEC and external
+Several gaps emerge from the review. Spear phishing detection remains dominated by the content signal, while
+the targeted tail bypasses it by definition, and there is no unified relational treatment for lateral/BEC or external
 impersonation. Graph approaches target the web and transactions rather than the domain knowledge graph of
-communication, and organizational susceptibility is not measured structurally. Finally, evaluations rarely control for leaks or test transfer across topologies, so effectiveness tends to be
+communication, and organizational susceptibility is not measured structurally. Evaluations also rarely control for leaks or test transfer across topologies, so effectiveness tends to be
 ill-defined. The present work
-addresses all three: a domain knowledge graph, its two detection invariants, a susceptibility metric, and a
+addresses these gaps: a domain knowledge graph, its two detection invariants, a susceptibility metric, and a
 leak-aware methodology that defines effectiveness.

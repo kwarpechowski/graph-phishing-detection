@@ -5,20 +5,20 @@
 \label{sec:conclusion}
 
 Modern phishing detection works in aggregate, yet a residual fraction, spear phishing and BEC, remains the
-most costly and largely evades content filters. The gap is structural: model an organization's domain
-knowledge as a graph, and the resulting inconsistency becomes measurable.
+most costly and largely evades content filters. The gap is structural, and by modeling an organization's domain
+knowledge as a graph, the resulting inconsistency can be measured.
 
 We answer the three research questions in turn.
 \begin{description}[noitemsep,topsep=2pt]
-  \item[RQ1 (static signal, T1):] Yes, conditionally. The cross-layer inconsistency invariant beats a single
-  contact graph and removes false alarms from legitimate new senders (Section~\ref{sec:res-inv1}), provided there
-  is a shared, observable domain-knowledge edge, and the gain vanishes under the layer/rhythm shuffle control.
-  \item[RQ2 (temporal signal, T2):] Yes. The temporal invariant overcomes the insensitivity of the static layers and,
-  unlike a volume-based detector, does not collapse against a stealthy attacker (Section~\ref{sec:res-inv2}); the
+  \item[RQ1 (static signal, T1):] The cross-layer inconsistency invariant outperforms a single
+  contact graph by removing false alarms from legitimate new senders (Section~\ref{sec:res-inv1}), provided there
+  is a shared, observable domain-knowledge edge; this gain vanishes under the layer/rhythm shuffle control.
+  \item[RQ2 (temporal signal, T2):] The temporal invariant addresses the insensitivity of the static layers and,
+  unlike a volume-based detector, maintains performance against a stealthy attacker (Section~\ref{sec:res-inv2}); this
   advantage is causally temporal and transfers to three real graphs.
-  \item[RQ3 (measurement, T3):] Measurable, and driven by the communication channel more than seniority. Cold external impersonation
-  leaves a margin of $\mathrm{Susc}\!\approx\!0.96$ at every level, whereas in the lateral channel it is the
-  periphery that is most exposed, not the executives (Section~\ref{sec:susceptibility}). At a realistic base rate
+  \item[RQ3 (measurement, T3):] Results indicate that susceptibility is driven more by the communication channel than by seniority. Cold external impersonation
+  results in a margin of $\mathrm{Susc}\!\approx\!0.96$ at every level, whereas in the lateral channel the
+  periphery is most exposed, rather than the executives (Section~\ref{sec:susceptibility}). At a realistic base rate
   the detectors act as triage instruments, with effectiveness defined operationally through low-FPR sensitivity
   under leak controls and a predictivity probe (Section~\ref{sec:res-rigor}).
 \end{description}
@@ -27,7 +27,7 @@ As its contributions, the paper offers the concept and formalization of the doma
 with the thesis that spear phishing is its violation, uniformly for lateral/BEC and external impersonation.
 On that foundation stand two complementary detection invariants, cross-layer inconsistency and cascade
 dynamics, with causal controls and validation on three real communication graphs. A measured organizational
-susceptibility metric shows the residual margin governed by relation, and that in the lateral channel the
+susceptibility metric shows the residual margin is governed by relation, and that in the lateral channel the
 periphery is more exposed than the top. Wrapping these are a leak-aware evaluation methodology and an
 operational definition of spear-phishing detection effectiveness.
 
@@ -38,7 +38,5 @@ scale and the operational threshold remain limitations. Section~\ref{sec:discuss
 Taken together, the results turn targeted email into a quantity that can be tracked rather than merely flagged: a
 receiving-side cascade signal holds at AUC $0.90$ against a stealthy attacker where volume detection drops
 below random, cold impersonation leaves a structural susceptibility floor of $\mathrm{Susc}\!\approx\!0.96$,
-and the largest lateral margin falls on the periphery rather than the executives. The defense this points toward asks
-not whether a message looks malicious, but whether it fits what the organization knows about itself. Turning
-that question into an operational filter, at the precision real deployment demands, is the open problem this
-work leaves behind.
+and the largest lateral margin falls on the periphery rather than the executives. The defense this points toward, which is the broader implication of the work, asks
+not whether a message looks malicious, but whether it fits what the organization knows about itself. Turning that question into an operational filter, at the precision real deployment demands, remains an open problem.

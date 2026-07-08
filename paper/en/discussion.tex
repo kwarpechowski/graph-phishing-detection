@@ -4,14 +4,13 @@
 \section{Discussion}
 \label{sec:discussion}
 
-The two invariants cover two disjoint failure modes, the susceptibility measurement exposes where the residual
-margin lies, and the leak-aware protocol fixes what the numbers can and cannot claim. We interpret the mechanism,
-outline the practical implications, and state the limits.
+The two invariants cover two disjoint failure modes, and the susceptibility measurement exposes where the residual
+margin lies. We interpret the mechanism and outline the practical implications and limits.
 
 \subsection{Interpretation: two invariants, two failure modes}
 The two invariants are complementary responses to two disjoint modes of targeted attack
-(Sec.~\ref{sec:res-inv1},~\ref{sec:res-inv2}). The per-threat ablation makes the complementarity concrete: for
-new senders the signal is carried by OSINT and time is useless, and for compromises it is the reverse. This is
+(Sec.~\ref{sec:res-inv1},~\ref{sec:res-inv2}). The per-threat ablation makes this complementarity concrete: for
+new senders the signal is carried by OSINT and time is useless, whereas for compromises it is the reverse. This is
 why single approaches fail on the targeted tail (a content filter, a contact graph, or a volumetric detector on
 its own): each is blind to one of the two modes.
 
@@ -24,15 +23,13 @@ message; we differ in locating that signal in the dynamics of the domain knowled
 or relays.
 
 \subsection{Practical implications}
-The central finding from Sec.~\ref{sec:susceptibility} --- that the periphery, not the executives, is most
-exposed under a lateral threat --- is the most concrete takeaway of the
-paper. For the lateral channel, the largest unaddressed margin lies on the periphery, the mid- and junior-level roles. The recommendation
-is two-part. First, awareness programs and hard controls, such as out-of-band verification for transfers, should
+The central finding from Sec.~\ref{sec:susceptibility} is that the periphery, not the executives, is most exposed under a lateral threat. For the lateral channel, the largest unaddressed margin lies on the periphery, the mid- and junior-level roles. The recommendation
+is twofold. First, awareness programs and hard controls, such as out-of-band verification for transfers, should
 cover the periphery and not only the top. Second, detection resources are worth directing where the domain
 knowledge graph is sparse, since that is where the residual margin is largest. For the cold impersonation
 channel no relational layer suffices ($\mathrm{Susc}\!\approx\!0.96$ regardless of rank), so here the graph must
 be combined with content and process controls, as the fusion experiment (Sec.~\ref{sec:res-content}) confirms.
-The domain knowledge graph is therefore a prioritization layer, not a standalone product: it indicates
+The domain knowledge graph is therefore a prioritization layer, rather than a standalone product; it indicates
 who, and through which relationship, is most weakly protected.
 
 The result also bears on the human factor. Human susceptibility rises under time pressure and authority cues

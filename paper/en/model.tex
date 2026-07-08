@@ -6,11 +6,6 @@
 \section{Model}
 \label{sec:model}
 
-The model is deliberately dry: symbols and relations only, no concrete values. Every quantity here is a
-variable; the numbers that instantiate it (population size, number of layers, time resolution, weights) are
-deferred to the Case Study (Sec.~\ref{sec:results}), so the model reads as a specification and the Case Study
-as one realization of it.
-
 \begin{figure}[t]\centering
 \resizebox{0.98\columnwidth}{!}{%
 \begin{tikzpicture}[>=Latex, font=\small, node distance=6mm,
@@ -82,19 +77,18 @@ $m_v^{(b)}$ & temporal-GNN memory of node $v$ after bucket $b$ \\
 
 \subsection{Domain knowledge graph}
 \label{sec:dkg}
-An organization's domain knowledge is relational: who knows whom, who is responsible for what, which
-competencies, routines, and public footprints they have. It is modeled as a multiplex network, one set of
+An organization's domain knowledge is relational in nature, encompassing who knows whom, who is responsible for what, and which
+competencies, routines, or public footprints they have. It is modeled as a multiplex network, one set of
 accounts with many types of relation stacked over it, each graph recording one kind of fact: who emails whom,
-who shares a skill, who is active when. A real relationship appears on many of these graphs at once; a forged or
-hijacked one appears on some but contradicts others. Everything that follows, both detectors and the
-susceptibility measure, encodes that agreement or disagreement across the stack, so we first pin down
+who shares a skill, who is active when. A real relationship appears on many of these graphs at once, while a forged or hijacked one appears on some but contradicts others. Detectors and the
+susceptibility measure use that agreement or disagreement across the stack, so we first pin down
 $\mathcal{G}$ and the two numbers that summarize a sender--victim pair, $C$ and $tc$.
 
 \begin{definition}[Domain knowledge graph]
 \label{def:dkg}
 A domain knowledge graph is $\mathcal{G}=(V,\{E_L\}_{L\in\mathcal{L}},\{w_L\},\tau)$, where $V$ is the set of
 accounts (people/roles), $\mathcal{L}$ is the set of relation \emph{layers} over the \emph{same} $V$ (contacts,
-hierarchy, collaboration, shared competencies/conferences/certificates, platforms, routines --- OSINT
+hierarchy, collaboration, and shared competencies/conferences/certificates, platforms, or routines (OSINT
 footprints from the persona fields \texttt{c3}--\texttt{c8}, defined in Sec.~\ref{sec:results}), $w_L\in(0,1]$ is the confidence weight of a layer, and
 $\tau:V\!\times\!V\!\to\!\mathcal{T}$ assigns to edges a \emph{temporal rhythm} (the sender's active windows).
 Each layer encodes \emph{one type} of domain fact; superimposed, they form the entire knowledge of ``what is
@@ -106,14 +100,12 @@ layers is given in the Case Study (Sec.~\ref{sec:cs-setup}, Tab.~\ref{tab:layers
 symbols.
 \end{definition}
 
-\noindent Intuitively, the definition is a stack of same-sized graphs over one set of people, each recording one
-kind of fact. The two numbers below --- $C$ and $tc$ --- summarize the agreement or disagreement across that
+\noindent The definition is a stack of same-sized graphs over one set of people, each recording one
+kind of fact. The two numbers below, $C$ and $tc$, summarize the agreement or disagreement across that
 stack for a single sender--victim pair, and they are the only inputs the detectors and the susceptibility
 measure use.
 
-\noindent The property we exploit is the synergy between layers: a genuine relation is consistent across
-many of them at once --- a known contact, in its own rhythm, with a real collaboration footprint --- whereas a
-fabricated fact or a compromise breaks that consistency. This motivates two scalar summaries of a sender--victim pair. The
+\noindent The property we exploit is the synergy between layers: a genuine relation is consistent across many of them at once, for example a known contact in its own rhythm with a real collaboration footprint, whereas a fabricated fact or a compromise breaks that consistency. This motivates two scalar summaries of a sender--victim pair. The
 domain-knowledge coverage weights the layers in which the pair co-occurs,
 \begin{equation}
 C(s,v)\;=\;\sum_{L\in\mathcal{L}} w_L\,\mathbf{1}\!\left[(s,v)\in E_L\right],
@@ -132,8 +124,7 @@ suffice for both.
 follow the same formalism. In lateral/BEC the sender $s$ is a compromised internal account, a known contact of
 $v$ writing outside its rhythm: coverage $C(s,v)$ is high yet $tc(s,v,t)=0$. In external impersonation, $s$
 impersonates a role or authority, giving the impression of a high $C$ while lacking real coverage in some of the
-layers (low structural consistency), possibly fabricating OSINT edges. In both cases the spear phisher respects the domain knowledge --- which lends the content its credibility ---
-but cannot reproduce it in full, and that inconsistency is the signal.
+layers (low structural consistency), possibly fabricating OSINT edges. In both cases the spear phisher respects the domain knowledge, which lends the content its credibility, but cannot reproduce it in full. This inconsistency is the signal.
 
 \smallskip On capabilities and scope: on compromise the attacker gains mailbox access and so knows
 the rhythm, making rhythm mimicry possible; fabricating OSINT footprints is cheap but does not create multilayer
@@ -143,7 +134,7 @@ treat the signal as a cost increase for the attacker; no detection is final.
 \subsection{Two detection invariants}
 \label{sec:invariants}
 The threat model says the attack must break consistency somewhere. It can break in two places, each mapping
-to one attack mode, and their complementarity is the structural reason a single detector cannot cover the
+to one attack mode, and their complementarity is the structural reason a single detector cannot cover
 the targeted tail, a focus of the Case Study in
 Sec.~\ref{sec:res-inv1} and~\ref{sec:res-inv2}.
 
@@ -165,12 +156,12 @@ its (in)consistency.
 
 \subsection{Organizational susceptibility}
 \label{sec:m-susc}
-Beyond detection, the graph exposes who is most at risk. Susceptibility is a property of position in the
+Beyond detection, the graph exposes who is most at risk. Susceptibility depends on a node's position in the
 graph, independent of any detector's tuning, and Sec.~\ref{sec:susceptibility} later measures it to answer
 RQ3.
 
-\noindent\emph{Intuition.} A node is susceptible when the most credible attack against it is also the hardest
-to detect. The definition takes the maximum over plausible attackers and the complement of the detection
+\noindent\emph{A node is susceptible when the most credible attack against it is also the hardest
+to detect.} The definition takes the maximum over plausible attackers and the complement of the detection
 probability, so a high score means there exists an attacker who both looks legitimate and slips through. We do
 not enumerate all such attackers; instead, Sec.~\ref{sec:susceptibility} correlates the score with
 graph-position features and reports which ones drive it.
@@ -196,8 +187,8 @@ reinforced control, independently of the detector.
 
 \subsection{Definition of detection effectiveness}
 \label{sec:effectiveness}
-Every result in the Case Study is held to a standard that is detector-independent and operational; the
-Methodology (Sec.~\ref{sec:method}) is the protocol enforcing it.
+Every result in the Case Study follows a standard that is detector-independent and operational; the
+Methodology (Sec.~\ref{sec:method}) is the protocol that includes it.
 
 A high benchmark accuracy alone does not attest to detecting spear phishing.
 
@@ -206,4 +197,4 @@ vanishing under shuffle controls that destroy the relational or temporal signal,
 ranking of methods established on one topology carries over to another. Effectiveness is judged by sensitivity
 at a low false-positive rate with explicit base-rate accounting, rather than by headline AUC; $98\%$ on a mass benchmark
 does not attest to detecting spear phishing. This is what the leak-aware protocol of Sec.~\ref{sec:method}
-enforces.
+includes.

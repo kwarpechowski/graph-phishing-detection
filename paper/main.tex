@@ -55,14 +55,13 @@ two invariants of its violation.
 
 The main result is cascade dynamics: a compromised account propagates off-rhythm, leaving a
 receiving-side wave signature that persists under a stealthy attacker, where volume-based detection drops below
-the random baseline, and that replicates across three real graphs (Enron, SNAP) with large effect sizes. We validate the complementary cross-layer inconsistency invariant synthetically, as a proof of soundness: its OSINT multiplex stays synthetic even on real graphs and a temporal layer dominates the signal, which
-we report without overstating.
+the random baseline, and that replicates across three real graphs (Enron, SNAP) with large effect sizes. We validate the complementary cross-layer inconsistency invariant synthetically, as a proof of soundness: the OSINT multiplex stays synthetic even on real graphs and a temporal layer dominates the signal.
 
 The central, detector-independent contribution is methodological: a leak-aware evaluation with shuffle controls,
 a predictivity probe for cross-topology transfer, and explicit base-rate accounting that locates the operational
 limits, which remain far from deployment thresholds. An organizational susceptibility metric shows that exposure
 is governed by relation rather than rank. The work reframes targeted email as a measurable property of the
-domain knowledge graph, with learning models as off-the-shelf instruments: spear phishing becomes measurable,
+domain knowledge graph, with learning models as standard tools: spear phishing becomes measurable,
 though not yet operationally solved.
 \end{abstract}
 
@@ -111,9 +110,7 @@ or not-for-profit sectors.
 \section*{Data availability}
 % TODO before submission: replace XXXXXXX with the DOI reserved on Zenodo
 % (New upload -> "Reserve DOI"); the same DOI is recorded in CITATION.cff and .zenodo.json.
-The reproducibility package --- the synthetic population generator, all experiment and analysis code,
-the generated population of $150$~personas, and the computed results from which the tables and figures
-are produced --- is openly archived on Zenodo (DOI:~\texttt{10.5281/zenodo.XXXXXXX}). The real
+The reproducibility package, including the synthetic population generator, all experiment and analysis code, the generated population of $150$~personas, and the computed results from which the tables and figures are produced, is openly archived on Zenodo (DOI:~\texttt{10.5281/zenodo.XXXXXXX}). The real
 communication graphs used for validation are public: the Enron email corpus \citep{klimt2004enron}
 and the SNAP datasets \texttt{email-Eu-core} and \texttt{CollegeMsg} \citep{leskovec2014snap}.
 
@@ -124,6 +121,7 @@ reviewed and edited the content as needed and take full responsibility for the c
 published article.
 
 %% Bibliography in Elsevier CAS author-year style
+\clearpage
 \bibliographystyle{cas-model2-names}
 \bibliography{bibliography}
 

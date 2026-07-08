@@ -9,26 +9,25 @@
 The procedure turns the two invariants into detectors, guards against inflated results, and checks the
 metrics against the definition of effectiveness (Sec.~\ref{sec:effectiveness}). Concrete values that instantiate
 it (population, number of layers and time buckets, cascade parameters, hyperparameters) are stated once, in the
-Case Study (Sec.~\ref{sec:results}).
+Case Study (Sec.~\ref{sec:results}), and the protocol includes four safeguards against inflation.
 
 \subsection{Overview of the verification procedure}
 \label{sec:m-overview}
 The procedure has four steps that mirror the model. First, instantiate the domain knowledge graph
 $\mathcal{G}$ (Def.~\ref{def:dkg}) on a population, deriving the relation layers $\mathcal{L}$ and the temporal
 rhythm $\tau$. Then build the two detectors, one per invariant (Sec.~\ref{sec:invariants}), as standard
-learning instruments over graph-position features. Evaluation follows under the leak-aware protocol below, so
-that any advantage due to leakage or capacity is destroyed by a control; the last step checks transfer to real
+learning instruments over graph-position features. Evaluation follows under the leak-aware protocol below to ensure any advantage due to leakage or capacity is destroyed by a control; the last step checks transfer to real
 topologies and reads off susceptibility (Def.~\ref{def:susc}).
 
 \subsection{Leak-aware evaluation protocol}
 \label{sec:eval}
-Graph detectors are easy to inflate; the protocol below enforces four safeguards against that.
+Graph detectors are easy to inflate; the protocol below uses four safeguards against that.
 
-The protocol enforces four requirements. A matched design makes legitimate traffic and attack edges share the same
-distribution of endpoints and degrees, so they differ only by the relational-temporal pattern and the
+The protocol includes four requirements. A matched design makes legitimate traffic and attack edges share the same
+distribution of endpoints and degrees, meaning they differ only by the relational-temporal pattern and the
 degree/identity confounder is removed \citep{arp2022dos}. Leak control adds a temporal split of the rhythm
 estimate, an audit of the fraction of out-of-rhythm mail, and a control that shuffles temporal order, each of
-which zeroes the signal if it is an artifact \citep{pendlebury2019tesseract}. Operational metrics report
+which ensures the signal is not an artifact \citep{pendlebury2019tesseract}. Operational metrics report
 sensitivity at a low FPR, with explicit base-rate arithmetic, dropping headline AUC. A predictivity probe then
 asks whether the ranking of methods established on one topology transfers to another (real Enron, SNAP graphs).
 Together these give the working definition of effectiveness of Sec.~\ref{sec:effectiveness}: a method works when
@@ -40,12 +39,11 @@ The design principle is uniform: features encode graph position and timing, neve
 inductive and applies to accounts unseen in training. Each invariant below is paired with the control that
 isolates its signal.
 
-\smallskip For a sender--victim pair we compare three feature sets of increasing structure --- contacts-only, static multiplex (contacts $+$ OSINT layers), and full (adding temporal
-consistency) --- with a gradient-boosting classifier. The causal control shuffles layer membership and rhythm: if
+\smallskip For a sender--victim pair we compare three feature sets of increasing structure (contacts-only, static multiplex with contacts and OSINT layers, and full with added temporal consistency) using a gradient-boosting classifier. The causal control shuffles layer membership and rhythm: if
 the signal is genuine cross-layer consistency, the control must collapse the advantage to chance.
 
 \smallskip The second invariant operates on the contacts layer
-$G=(V,E)$ with time divided into $T$ buckets. An attack is a cascade: a patient-zero $s_0$ sends malicious mail
+$G=(V,E)$ with time divided into $T$ buckets. An attack is a cascade where a patient-zero $s_0$ sends malicious mail
 to contacts; each recipient becomes a carrier with probability $p_\mathrm{inf}$ and propagates to depth $H$
 (Fig.~\ref{fig:cascade}). A single event $u\!\to\!v$ is locally indistinguishable from legitimate mail; the
 signal is the cascade context, since within the wave's window many of $v$'s neighbors receive mail and $u$ was
@@ -59,7 +57,7 @@ who is connected to whom but not in what order. The temporal score instead keeps
 bucket by bucket and read one bucket before the event it scores, so it can only use the past. That past-only
 reading is what lets the receiving-side wave become a signal, and it is also what a time-shuffle destroys.
 
-\smallskip Formally, the static GNN builds embeddings from the aggregated graph with a normalized
+\smallskip The static GNN builds embeddings from the aggregated graph with a normalized
 adjacency $\hat{A}$ and features $X$,
 \begin{equation}
 H = \hat{A}\,\sigma\!\big(\hat{A}\,X\,W_1\big)\,W_2,
@@ -68,7 +66,7 @@ H = \hat{A}\,\sigma\!\big(\hat{A}\,X\,W_1\big)\,W_2,
 \label{eq:static}
 \end{equation}
 whereas the temporal GNN maintains a memory $m_v^{(b)}$ and scores an event of bucket $b$ using the state from
-before its update, which enforces causality and avoids leakage,
+before its update, which ensures causality and avoids leakage,
 \begin{align}
 \mathrm{score}_{\mathrm{temp}}(s,v,b) &= g\!\big([\,m_s^{(b-1)},\,m_v^{(b-1)},\,m_s^{(b-1)}\!\odot\!m_v^{(b-1)},\,x_{sv}\,]\big),
 \label{eq:temp-score}\\
@@ -120,7 +118,7 @@ detector enjoys a tuning advantage; the concrete settings are given in the Case 
      signal = \emph{synchronized burst} of the wave and sender \emph{freshness}};
 \end{tikzpicture}}
 \caption[Lateral phishing as a temporal cascade]{Lateral phishing as a temporal cascade: a carrier ($s_0$)
-infects contacts, those --- their own, and the wave propagates across the graph. Detection requires \emph{multi-hop,
+infects contacts, and those in turn infect their own, so the wave propagates across the graph. Detection requires \emph{multi-hop,
 temporal} propagation context.}
 \label{fig:cascade}
 \end{figure}
