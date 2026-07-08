@@ -4,29 +4,21 @@
 \section{Introduction}
 \label{sec:intro}
 
-A request lands in the CFO's inbox: the ``CEO'' asks for an urgent transfer. The wording is polished and the pretext plausible, and nothing in the content betrays the deception \citep{butavicius2022why,sturman2025security}. Such attacks are increasingly effective. For instance, the FBI's IC3 reports that Business Email Compromise (BEC) caused adjusted losses of nearly \$2.4 billion in 2023 \citep{fbi2024ic3}, often bypassing content filters because there is nothing wrong with the message, only with the sender and the context. This is spear phishing, which is the residual that mass detection never reaches.
+A request lands in the CFO's inbox: the ``CEO'' asks for an urgent transfer. The wording is polished, the pretext plausible, and nothing in the content betrays the deception \citep{butavicius2022why,sturman2025security}. Such attacks are increasingly effective. FBI IC3 reports show that Business Email Compromise (BEC) caused adjusted losses of nearly \$2.4 billion in 2023 \citep{fbi2024ic3}. These often bypass content filters because the message itself is typically clean; the deception lies in the sender's identity and the communication context. This is spear phishing---the residual that mass detection fails to capture.
 
-Phishing detection is often presented as an almost solved problem. Modern email filters, built on content and
+Phishing detection is often framed as an almost solved problem. Modern email filters, built on content and
 reputation, classify mass campaigns at $\sim$98\% accuracy on typical benchmarks
-\citep{birthriya2025detection,tan2020graph}. That number is misleading, as the residual (spear phishing and BEC) drives a large share of financial losses
-\citep{cidon2019high,ho2019detecting} while largely evading content-based methods, and this residual $2\%$ represents
+\citep{birthriya2025detection,tan2020graph}. However, this figure is misleading. The remaining $2\%$---spear phishing and BEC---drives a large share of financial losses
+\citep{cidon2019high,ho2019detecting} while largely evading content-based methods. This residual represents
 the core of the problem.
 
-The gap that lets this residual $2\%$ through is structural rather than transient, as a targeted attack
-succeeds by respecting the victim's domain knowledge: roles, hierarchy, business relationships, competencies, communication routines, and project context. The attacker assembles that knowledge from OSINT
-\citep{dewan2014analyzing,brown2025web}, and language models lower its cost \citep{bethany2024evaluating}.
-Maliciousness is determined by the sender and the communication context, and the wording is incidental. The detection signal must
+The gap that lets this residual $2\%$ through is structural. A targeted attack
+succeeds by respecting the victim's domain knowledge: roles, hierarchy, business relationships, and communication routines. The attacker assembles this knowledge from OSINT
+\citep{dewan2014analyzing,brown2025web}, a process made cheaper by language models \citep{bethany2024evaluating}.
+Maliciousness is thus determined by the sender and the context, while the wording remains incidental. The detection signal must
 therefore lie beyond the content, in the structure of relationships and the dynamics of their violation.
 
-Our thesis is that spear phishing is a violation of domain knowledge. An organization's domain knowledge can be modeled
-as a multiplex graph of relations over its accounts: contacts, collaboration, and competencies, alongside OSINT traces and temporal rhythm. A targeted attack breaks this structure. It manifests through two invariants no content filter
-can see. The first is cross-layer inconsistency: a genuine relation is consistent across many layers at once,
-whereas impersonation (external or a compromised account) appears in one layer but contradicts the others,
-such as a known name that arrives off-rhythm or without any OSINT trace. Then come propagation dynamics.
-Lateral phishing spreads as a cascade; a compromised account sending to its contacts off-rhythm leaves
-a wave-like signature on the receiving side that no single message reveals. Together, these invariants cover
-both modes of targeted attack: lateral/BEC from a compromised internal account, and external impersonation
-of a role or authority.
+Our thesis is that spear phishing is a violation of domain knowledge. We model this knowledge as a multiplex graph of relations: contacts and collaboration, supplemented by competencies, OSINT traces, and temporal rhythm. A targeted attack breaks this structure, manifesting through two invariants no content filter can see. First, cross-layer inconsistency: a genuine relation is typically consistent across many layers, whereas impersonation appears in one but contradicts others---for example, a known name arriving off-rhythm or without an OSINT trace. Second, propagation dynamics. Lateral phishing spreads as a cascade; a compromised account sending to its contacts off-rhythm leaves a wave-like signature on the receiving side that no single message reveals. These invariants cover both primary modes of targeted attack: lateral/BEC from a compromised internal account, and external impersonation of a role or authority.
 
 We make the thesis testable by splitting it into three research
 questions, each paired with a measurable sub-thesis.
@@ -45,12 +37,12 @@ questions, each paired with a measurable sub-thesis.
 \noindent The aim is to show that the two invariants carry a causal, transferable signal and to mark where it
 stops being operationally useful. The learning models are standard tools throughout.
 
-For measurement rigor, we focus on methodology to avoid a common pitfall: graph-based detectors are
-easy to inflate. Real-world anchors often leak rhythm, degree, and community alignment with labels, and
-synthetic generators can favor certain model classes. To counter this, we follow the caution of
-\citet{arp2022dos} and the TESSERACT protocol \citep{pendlebury2019tesseract}, adopting a leak-aware
+To ensure measurement rigor, we adopt a methodology that avoids a common pitfall: graph-based detectors are
+easy to inflate. Real-world anchors often leak rhythm, degree, or community alignment with labels, while
+synthetic generators can favor certain model classes. We follow the caution of
+\citet{arp2022dos} and the TESSERACT protocol \citep{pendlebury2019tesseract} by adopting a leak-aware
 evaluation and a predictivity probe. This approach tests whether the ranking of methods transfers across
-topologies, establishing a rigorous standard for what effectiveness means for the targeted tail. The learning models we employ, a temporal graph network and gradient boosting, serve as measurement
+topologies, establishing a standard for what effectiveness means for the targeted tail. The learning models we employ---a temporal graph network and gradient boosting---serve as measurement
 tools to quantify the two invariants; the paper's contribution is a way of framing and measuring targeted
 attacks, not a new machine-learning architecture.
 

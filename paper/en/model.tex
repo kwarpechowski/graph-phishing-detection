@@ -65,6 +65,7 @@ $E_L$ & edge set of layer $L\in\mathcal{L}$ \\
 $w_L\in(0,1]$ & confidence weight of layer $L$ \\
 $\tau(s)$ & temporal rhythm (active windows) of sender $s$ \\
 $T$ & number of time buckets partitioning the period \\
+$\rho$ & topology-decorrelation coefficient \\
 $b$ & a single time bucket, $b\in\{1,\dots,T\}$ \\
 $C(s,v)$ & domain-knowledge coverage of pair $(s,v)$, Eq.~\eqref{eq:consistency-model} \\
 $tc(s,v,t)$ & temporal consistency of $(s,v)$ at time $t$ \\
@@ -94,7 +95,7 @@ A domain knowledge graph is $\mathcal{G}=(V,\{E_L\}_{L\in\mathcal{L}},\{w_L\},\t
 accounts (people/roles), $\mathcal{L}$ is the set of relation \emph{layers} over the \emph{same} $V$ (contacts,
 hierarchy, collaboration, and shared competencies/conferences/certificates, platforms, or routines; OSINT
 footprints from the persona fields \texttt{c3}--\texttt{c8}, defined in Sec.~\ref{sec:results}), $w_L\in(0,1]$ is the confidence weight of a layer, and
-$\tau:V\!\times\!V\!\to\!\mathcal{T}$ assigns to edges a \emph{temporal rhythm} (the sender's active windows).
+$\tau:V \to \mathcal{T}$ assigns to senders a \emph{temporal rhythm} (the sender's active windows).
 Each layer encodes \emph{one type} of domain fact; superimposed, they form the entire knowledge of ``what is
 normal''. The layers are grouped into three families: \emph{structural} layers (contacts, hierarchy, domain)
 from the organizational chart, \emph{OSINT} layers (competencies, public footprint, platforms, events, routine,
@@ -109,7 +110,7 @@ kind of fact. The two numbers below, $C$ and $tc$, summarize the agreement or di
 stack for a single sender--victim pair, and they are the only inputs the detectors and the susceptibility
 measure use.
 
-\noindent The property we exploit is the synergy between layers: a genuine relation is consistent across many of them at once, for example a known contact in its own rhythm with a real collaboration footprint, whereas a fabricated fact or a compromise breaks that consistency. This motivates two scalar summaries of a sender--victim pair. The
+\noindent The property we exploit is the interplay between layers: a genuine relation is consistent across many of them at once, for example a known contact in its own rhythm with a real collaboration footprint, whereas a fabricated fact or a compromise breaks that consistency. This motivates two scalar summaries of a sender--victim pair. The
 domain-knowledge coverage weights the layers in which the pair co-occurs,
 \begin{equation}
 C(s,v)\;=\;\sum_{L\in\mathcal{L}} w_L\,\mathbf{1}\!\left[(s,v)\in E_L\right],
@@ -188,8 +189,8 @@ reinforced control, independently of the detector.
 Every result in the Case Study follows a standard that is detector-independent and operational; the
 Methodology (Sec.~\ref{sec:method}) is the protocol that operationalizes it.
 
-A high benchmark accuracy alone does not attest to detecting spear phishing, since a method works operationally for the targeted tail only when its advantage is causally relational-temporal,
+A high benchmark accuracy alone does not attest to detecting spear phishing. A method works operationally for the targeted tail only when its advantage is causally relational-temporal,
 vanishing under shuffle controls that destroy the relational or temporal signal, and transferable, so that the
 ranking of methods established on one topology carries over to another. Effectiveness is judged by sensitivity
-at a low false-positive rate with explicit base-rate accounting, rather than by headline AUC. This is what the leak-aware protocol of Sec.~\ref{sec:method}
-implements.
+at a low false-positive rate with explicit base-rate accounting, rather than by headline AUC. The leak-aware protocol of Sec.~\ref{sec:method}
+implements this standard.

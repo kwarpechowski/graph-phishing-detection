@@ -4,15 +4,15 @@
 \section{Discussion}
 \label{sec:discussion}
 
-The two invariants cover two disjoint failure modes, and the susceptibility measurement exposes where the residual
-margin lies. We interpret the mechanism and outline the practical implications and limits.
+The two invariants address disjoint failure modes, and the susceptibility measure reveals where the remaining
+margin lies. We focus here on the mechanism's implications and its operational limits.
 
 \subsection{Interpretation: two invariants, two failure modes}
 The two invariants are complementary responses to two disjoint modes of targeted attack
-(Sec.~\ref{sec:res-inv1},~\ref{sec:res-inv2}). The per-threat ablation makes this complementarity concrete: for
-new senders the signal is carried by OSINT and time is useless, whereas for compromises it is the reverse. This is
-why single approaches fail on the targeted tail (a content filter, a contact graph, or a volumetric detector on
-its own): each is blind to one of the two modes.
+(Sec.~\ref{sec:res-inv1},~\ref{sec:res-inv2}). Per-threat ablation makes this concrete: for
+new senders, the signal is carried by OSINT while time is useless; for compromises, the reverse holds. This explains
+why single-signal approaches fail on the targeted tail. Whether it is a content filter, a contact graph, or a volumetric detector,
+each is blind to at least one of these modes.
 
 A second result concerns the stealthy attacker. A volumetric detector in the spirit of COMPA
 \citep{stringhini2015thataint} assumes that a compromise shows up as a surge; when the attacker deliberately
@@ -23,40 +23,38 @@ message; we differ in locating that signal in the dynamics of the domain knowled
 or relays.
 
 \subsection{Practical implications}
-The central finding from Sec.~\ref{sec:susceptibility} is that the periphery, not the executives, is most exposed under a lateral threat. For the lateral channel, the largest unaddressed margin lies on the periphery, the mid- and junior-level roles. The recommendation
-is twofold. First, awareness programs and hard controls, such as out-of-band verification for transfers, should
-cover the periphery and not only the top. Second, detection resources are worth directing where the domain
-knowledge graph is sparse, since that is where the residual margin is largest. For the cold impersonation
-channel no relational layer suffices ($\mathrm{Susc}\!\approx\!0.96$ regardless of rank), so here the graph must
+The central finding from Sec.~\ref{sec:susceptibility} is that the periphery, not the executives, is most exposed under a lateral threat. For the lateral channel, the largest unaddressed margin lies on the periphery, specifically the mid- and junior-level roles. This suggests that awareness programs and hard controls, such as out-of-band verification for transfers, should cover the periphery rather than focusing solely on the top. Detection resources are similarly best directed where the domain
+knowledge graph is sparse, as that is where the residual margin is largest. For the cold impersonation
+channel, however, no relational layer suffices ($\mathrm{Susc}\!\approx\!0.96$ regardless of rank). Here the graph must
 be combined with content and process controls, as the fusion experiment (Sec.~\ref{sec:res-content}) confirms.
-The domain knowledge graph is therefore a prioritization layer, rather than a standalone product; it indicates
-who, and through which relationship, is most weakly protected.
+The domain knowledge graph is thus a prioritization tool, not a standalone product; it identifies
+who is most weakly protected and through which relationship.
 
 The result also bears on the human factor. Human susceptibility rises under time pressure and authority cues
 while awareness training moderates it only partially (Section~\ref{sec:related}), so a structural susceptibility
 measure allows limited training interventions to target the roles the technology protects least.
 
 \subsection{Limitations}
-The limitations define the scope of the claims. \textit{First, maliciousness is synthetic.} No public corpus
+The limitations define the scope of these claims. First, the maliciousness is synthetic. No public corpus
 links real OSINT facts with labeled compromises, so we generate attack labels on real structure (Enron, SNAP) or
-on a synthetic population of twins. We therefore validate the mechanism (out-of-rhythm mail separates
+on a synthetic population of twins. We validate the mechanism (out-of-rhythm mail separates
 compromises; layer inconsistency separates impersonation), not the detection of real intrusions. The OSINT
-multiplex advantage of Invariant~I remains purely synthetic, and we read it as a proof of soundness rather than a
-measurement on real traffic. There is also some circularity: the synthetic population is generated graph-first,
-so detecting a violation of that structure is partly built in. In line with this, the layer analysis
-(\ref{sec:res-inv1}) shows the temporal layer carrying almost all of Invariant~I's signal, with the structural
-and OSINT layers contributing little unless the topology is artificially decorrelated; the headline of
-Invariant~I then reduces to rhythm consistency detecting off-rhythm mail, whereas the cascade result
-(Invariant~II) establishes the receiving-side signal much more robustly on real graphs. \textit{Second, the
-susceptibility measurement inherits these assumptions.} The $\mathrm{Susc}$ figures are relative to our event
-model and population structure (19~companies of about 8 people, one domain per company); the direction of the
-conclusions (relationship over rank; periphery most exposed) is robust, but the exact values do not
-transfer directly to every organization. The direction is also partly definitional: executives are layer-rich by
-construction, so their stronger structural protection follows in part from how we tied layer richness to
-seniority, a coupling that should be stress-tested under alternative assignments before the periphery-first
-recommendation is generalized. \textit{Third, the scale is limited} ($N{=}150$ twins; real graphs up to about 2k
-nodes), so the comparison with heavy GNN architectures (GATNE/HGT) is a sanity check rather than a full benchmark.
-\textit{Fourth, the operational threshold.} Even the best operating point (sensitivity@FPR$1\%$) is orders of
+multiplex advantage of Invariant~I remains purely synthetic; it is a proof of soundness rather than a
+measurement on real traffic. There is also some circularity: since the synthetic population is generated graph-first,
+detecting a violation of that structure is partly built in. This is reflected in the layer analysis
+(\ref{sec:res-inv1}), which shows the temporal layer carrying almost all of Invariant~I's signal. Structural
+and OSINT layers contribute little unless the topology is artificially decorrelated. The dominant signal of
+Invariant~I thus reduces to rhythm consistency detecting off-rhythm mail, while the cascade result
+(Invariant~II) establishes the receiving-side signal much more robustly on real graphs. Second, the
+susceptibility measurement inherits these assumptions. The $\mathrm{Susc}$ figures are relative to our event
+model and population structure (19~companies of about 8 people, one domain per company). While the direction of the
+conclusions (relationship over rank; periphery most exposed) is robust, the exact values do not
+transfer directly to every organization. This is partly definitional: executives are layer-rich by
+construction, so their stronger structural protection follows from how we tied layer richness to
+seniority. This coupling should be stress-tested under alternative assignments before generalizing the periphery-first
+recommendation. Third, the scale is limited ($N{=}150$ twins; real graphs up to about 2k
+nodes), making the comparison with heavy GNN architectures (GATNE/HGT) a sanity check rather than a full benchmark.
+Finally, the operational threshold remains a gap. Even the best operating point (sensitivity@FPR$1\%$) is orders of
 magnitude from the deployment threshold on real mail (Ho et al.\ \citep{ho2019detecting}: $<\!4$~FP/M); we report
 it as a requirement we are beginning to meet rather than a record.
 

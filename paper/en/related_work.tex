@@ -10,7 +10,7 @@ content (\ref{sec:rw-graph}), and evaluation rigor (\ref{sec:rw-eval}), closing 
 
 \subsection{Spear phishing and BEC: why content is insufficient}
 \label{sec:rw-spear}
-Targeted attacks, such as spear phishing and whaling, alongside Business Email Compromise, differ from mass phishing in their personalization and context.
+Targeted attacks---spear phishing, whaling, and Business Email Compromise---differ from mass phishing in their personalization and context.
 A recent survey in \emph{Computers \& Security} systematizes the techniques and gaps
 of the area \citep{birthriya2025detection}. \citet{ho2019detecting} characterized lateral phishing from
 compromised accounts across $113$~million emails and fixed an operational low-FPR threshold of $<\!4$~FP/million.
@@ -26,8 +26,8 @@ is determined by the sender and the surrounding context rather than by what was 
 Spear phishing draws its credibility from \emph{domain knowledge} built on open-source intelligence (OSINT).
 Automated harvesting of such traces has been studied since early work \citep{edwards2017panning}. Yet \citet{dewan2014analyzing}
 found that raw social and OSINT features added \emph{little} beyond content and URLs
-\citep{dewan2014analyzing,dewan2017facebook}, a caution we take seriously: OSINT helps as a \emph{relation
-constructor}, a shared list or affiliation, and treating it as a flat feature is a known pitfall. Language models then drastically lower the
+\citep{dewan2014analyzing,dewan2017facebook}---a caution we take seriously: OSINT helps as a \emph{relation
+constructor}, a shared list or affiliation, and treating it as a flat feature is a known pitfall. Language models drastically lower the
 cost of personalization. Automated spear-phishing campaigns match human experts in human-subject studies
 \citep{bethany2024evaluating}, and realistic OSINT traces can be generated synthetically without subjects
 \citep{brown2025web}. Once content can be
@@ -39,13 +39,13 @@ The human factor explains why this hard-to-detect tail is so effective. Suscepti
 personality traits and context \citep{halevi2015spearphishing}, and time pressure together with persuasion cues
 (authority, urgency) reduces detectability \citep{butavicius2022why}. Awareness and decision style
 moderate detection ability \citep{sturman2025security}. The implication for technical defense is significant:
-because susceptibility is a function of \emph{role and relation, alongside context}, (a)~a content filter is
-insufficient, and (b)~it can be \emph{measured} structurally, which we do via an organizational
+because susceptibility is a function of \emph{role and relation, alongside context}, a content filter is
+insufficient, and it can be \emph{measured} structurally, which we do via an organizational
 susceptibility metric (Section~\ref{sec:susceptibility}).
 
 \subsection{The graph signal: from GNN foundations to knowledge graphs}
 \label{sec:rw-graph}
-The two invariants rest on a mature apparatus of graph learning, organized here into six threads that indicate
+The two invariants rest on a mature apparatus of graph learning, organized here into threads that indicate
 what we borrow and what is missing for a \emph{domain knowledge graph} of email.
 
 On the foundations of inductive learning, modern graph networks learn node representations through
@@ -108,9 +108,9 @@ whether it is an artifact of the generator. We use the same standard to define a
 \subsection{Gaps and positioning of the work}
 \label{sec:rw-gap}
 Several gaps emerge from the review. Spear phishing detection remains dominated by the content signal, while
-the targeted tail bypasses it by definition, and there is no unified relational treatment for lateral/BEC or external
+the targeted tail bypasses it by definition. There is no unified relational treatment for lateral/BEC or external
 impersonation. Graph approaches target the web and transactions rather than the domain knowledge graph of
-communication, and organizational susceptibility is not measured structurally. Evaluations also rarely control for leaks or test transfer across topologies, so effectiveness tends to be
+communication, and organizational susceptibility is not measured structurally. Evaluations rarely control for leaks or test transfer across topologies, so effectiveness tends to be
 ill-defined. The present work
 addresses these gaps: a domain knowledge graph, its two detection invariants, a susceptibility metric, and a
 leak-aware methodology that defines effectiveness.

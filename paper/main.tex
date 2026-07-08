@@ -47,17 +47,17 @@ Cascade Dynamics and Leak-Aware Evaluation}
 
 %% Abstract (inlined -- CAS abstract environment does not expand \input reliably)
 \begin{abstract}
-Modern email filters detect mass phishing with high accuracy ($\sim$98\%) from content and reputation, yet the
-residual traffic, spear phishing and Business Email Compromise (BEC), is the most costly, and nearly undetectable by content or reputation alone. We argue that this is structural: a targeted attack succeeds by respecting the victim's domain
+Modern email filters detect mass phishing with high accuracy ($\sim$98\%) from content and reputation. Yet the
+residual traffic---spear phishing and Business Email Compromise (BEC)---is the most costly, and nearly undetectable by content or reputation alone. We argue that this gap is structural: a targeted attack succeeds by respecting the victim's domain
 knowledge, so the signal lies not in the content but in its inconsistency with that knowledge and in the attack's
 propagation dynamics. We model the organizational domain knowledge graph as a multiplex of relations and study
 two invariants of its violation.
 
-The main result is cascade dynamics: a compromised account propagates off-rhythm, leaving a
-receiving-side wave signature that persists under a stealthy attacker, where volume-based detection drops below
-the random baseline, and that replicates across three real graphs (Enron, SNAP) with large effect sizes. We validate the complementary cross-layer inconsistency invariant synthetically, as a proof of soundness: the OSINT multiplex stays synthetic even on real graphs and a temporal layer dominates the signal.
+The main result is cascade dynamics. A compromised account propagates off-rhythm, leaving a
+receiving-side wave signature that persists under a stealthy attacker where volume-based detection drops below
+the random baseline. This replicates across three real graphs (Enron, SNAP) with large effect sizes. We validate the complementary cross-layer inconsistency invariant synthetically as a proof of soundness: the OSINT multiplex stays synthetic even on real graphs, and a temporal layer dominates the signal.
 
-The central, detector-independent contribution is methodological: a leak-aware evaluation with shuffle controls,
+The detector-independent contribution is methodological: a leak-aware evaluation with shuffle controls,
 a predictivity probe for cross-topology transfer, and explicit base-rate accounting that locates the operational
 limits, which remain far from deployment thresholds. An organizational susceptibility metric shows that exposure
 is governed by relation rather than rank. The work reframes targeted email as a measurable property of the

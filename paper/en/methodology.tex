@@ -7,8 +7,7 @@
 \label{sec:method}
 
 The procedure turns the two invariants into detectors, guards against inflated results, and checks the
-metrics against the definition of effectiveness (Sec.~\ref{sec:effectiveness}). Concrete values that instantiate
-it (population, number of layers and time buckets, cascade parameters, hyperparameters) are stated once, in the
+metrics against the definition of effectiveness (Sec.~\ref{sec:effectiveness}). Concrete values---population, number of layers, time buckets, cascade parameters, hyperparameters---are stated once, in the
 Case Study (Sec.~\ref{sec:results}).
 
 \subsection{Overview of the verification procedure}
@@ -35,8 +34,8 @@ its advantage meets the standard defined there.
 
 \subsection{Detectors and causal controls}
 \label{sec:m-detectors}
-The design principle is uniform: features encode graph position and timing, never identity, so every detector is
-inductive and applies to accounts unseen in training. Each invariant below is paired with the control that
+The design principle is uniform: features encode graph position and timing, never identity. This makes every detector
+inductive and applicable to accounts unseen in training. Each invariant below is paired with the control that
 isolates its signal.
 
 \smallskip For a sender--victim pair we compare three feature sets of increasing structure (contacts-only, static multiplex with contacts and OSINT layers, and full with added temporal consistency) using a gradient-boosting classifier. The causal control shuffles layer membership and rhythm: if
@@ -51,11 +50,11 @@ hit just before. Four detectors of increasing temporal awareness are compared: a
 bound), a hand-crafted cascade context (1-hop plus burst, freshness, and wave density), a static GNN (topology,
 no time), and a temporal GNN with node memory.
 
-\smallskip The two equations below differ in one thing only: whether the model may
+\smallskip The two equations below differ in one respect: whether the model may
 look forward in time. The static score summarizes a node by its neighbors in the whole aggregated graph, seeing
-who is connected to whom but not in what order. The temporal score instead keeps a running memory updated
+who is connected to whom but not in what order. The temporal score keeps a running memory updated
 bucket by bucket and read one bucket before the event it scores, so it can only use the past. That past-only
-reading is what lets the receiving-side wave become a signal, and it is also what a time-shuffle destroys.
+reading is what lets the receiving-side wave become a signal, and it is what a time-shuffle destroys.
 
 \smallskip The static GNN builds embeddings from the aggregated graph with a normalized
 adjacency $\hat{A}$ and features $X$,
@@ -74,9 +73,9 @@ m_v^{(b)} &= \mathrm{GRU}\!\Big(\tfrac{1}{d_v^{(b)}}\!\!\sum_{u:\,(u\to v)\in b}
 \label{eq:temp-mem}
 \end{align}
 
-The shuffle control is exact: since $\mathrm{score}_{\mathrm{stat}}$ is permutation-invariant in time
+The shuffle control is exact. Since $\mathrm{score}_{\mathrm{stat}}$ is permutation-invariant in time
 while $\mathrm{score}_{\mathrm{temp}}$ is not, the drop in $\mathrm{AUC}_{\mathrm{temp}}$ after time shuffling
-measures the amount of temporal information the model used. This is the formal justification of the temporal
+measures the amount of temporal information the model actually used---formally justifying the temporal
 control.
 
 \smallskip Beyond the GNN we implement two strong practical methods.
@@ -137,7 +136,7 @@ respective table or figure caption.
 \subsection{Metrics, base rate, and threats to validity}
 \label{sec:m-metrics}
 The headline metric is sensitivity at a fixed low FPR, the operational working point,
-$\text{sensitivity}@\mathrm{FPR} = \max\{\mathrm{TPR}(\theta):\mathrm{FPR}(\theta)\le\alpha\}$; AUC is reported
+$\text{sensitivity}@\mathrm{FPR} = \max\{\mathrm{TPR}(\theta):\mathrm{FPR}(\theta)\le\alpha\}$ (where $\alpha=0.01$ for our primary analysis); AUC is reported
 alongside it. Real systems operate at a far stricter FPR ($<\!4$~FP/million, \citep{ho2019detecting}), so the FPR
 reported here is a liberal lower bound rather than a deployment threshold; at a realistic prevalence, precision
 follows from Bayes' theorem, which we make explicit in the Case Study (Sec.~\ref{sec:res-rigor}). To isolate the
